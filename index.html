@@ -77,7 +77,7 @@
 
 
   		<script type="text/x-handlebars" data-template-name="components/music-entry">
-  			<div class="music-item">
+  			<div {{bind-attr class=":music-item isNew:isNew"}}>
   				
   				<div class="all-text-container">
 	  				
@@ -385,8 +385,7 @@
 			  					youTubeLink=youTubeLink
 								spotifyLink=spotifyLink
 								soundCloudLink=soundCloudLink
-			  					currentUserEmail=currentUserInfo.email
-			  					currentUserFavs=currentUserInfo.favorites
+			  					currentUserInfo=currentUserInfo
 			  					submittedByEmail=submittedByEmail
 			  					submittingComment='submittingComment'
 			  					updatingEntry='updatingEntry'

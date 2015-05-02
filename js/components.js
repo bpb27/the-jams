@@ -220,6 +220,10 @@
 	  	
 	  	tagName: 'span',
 	  	textElements: ['title', 'artist', 'album', 'year', 'review'],
+	  	currentUserEmail: Em.computed.alias('currentUserInfo.email'),
+	  	currentUserFavs: Em.computed.alias('currentUserInfo.favorites'),
+	  	lastVisit: Em.computed.alias('currentUserInfo.lastVisit'),
+
 
 		isCreator: function () {
 			return this.get('currentUserEmail') === this.get('submittedByEmail') || this.get('currentUserEmail') === 'brendanbrown27@gmail.com';
@@ -228,6 +232,10 @@
 		isFavorite: function () {
 			return this.get('currentUserFavs').indexOf(this.get('identity')) != -1;
 		}.property('currentUserFavs'),
+
+		isNew: function () {
+			return (this.get('createdAt') > this.get('lastVisit')) && !this.get('isCreator');
+		}.property('lastVisit'),
 			
 		needsVideo: function(){
 			return (this.get('type') === "Live Performance" || this.get('type') === "Music Video");
@@ -294,6 +302,7 @@
 			loadPlayer: function(obj, link, type){
 				var playObject = {link: link, linkType: type, title: obj.get('title'), artist: obj.get('artist')};
 				this.sendAction('loadPlayer', playObject);
+				this.set('isNew', false);
 			},
 
 			submittingComment: function (param) {

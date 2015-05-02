@@ -512,6 +512,7 @@ video#bgvid {
 	text-align: center;
 	margin-top: 30px;
 	opacity: 0.9;
+	padding: 48px;
 }
 
 .jumbotron .form-control{
@@ -867,6 +868,11 @@ video#bgvid {
 	margin: 0px 0px 15px 0px;
 	padding: 5px 20px 10px 20px;
 	position: relative;
+}
+
+.music-item.isNew {
+	box-shadow: 0px 0px 10px 3px rgba(219, 66, 66, 1);
+  	border: 3px solid rgb(230, 99, 99);
 }
 
 .music-item:hover {

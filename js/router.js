@@ -268,8 +268,6 @@
 		      		return song.get('name').match(rx) || song.get('submittedBy').match(rx) || song.get('type').toString().match(rx);
 		    });
 
-		    console.log(tunes);
-
 		   return tunes;
 	  	},
 		
@@ -458,7 +456,7 @@
 				
 				this.store.find('user', user_id).then(function(user){
 					
-					var favorites = user.get('favorites');
+					var favorites = user.get('favorites') || '';
 					songID += ',';
 					
 					if (favorites.length < 50) favorites = favorites.replace('null', '');
@@ -505,8 +503,6 @@
 			},
 
 			playAllSpotify: function () {
-				
-
 				this.get('controllers.auth').send('playRequest', {embedLink: this.get('playAllSpotifyLinks'), type_of_play: 'all_spotify'});
 			},
 
