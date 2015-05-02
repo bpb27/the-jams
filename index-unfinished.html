@@ -1,0 +1,134 @@
+<script type="text/x-handlebars" data-template-name="components/writing-entry">
+  			<div {{bind-attr class=":writingEntry customClass"}}>
+  				<h6>{{submittedBy}}<h6>
+  				<h2>{{title}} - {{author}}</h2>
+  				<p>{{review}}</p>
+  				<p class="snippet">"{{snippet}}"</p>
+  				<button {{action "loadReader" text}}class="btn read-btn">Read It.</button>
+  				<div {{bind-attr class=":reader-modal isShowingReader:modal-layer:hide"}}>
+  					<button {{action "closeReader"}} class="btn close-reader-btn">Close</button>
+  					<br>
+					{{#if isShowingReader}}
+						<div class="reader-container">
+							<textarea spellcheck=false class="reader-textarea">{{unbound text}}</textarea>
+						</div>
+					{{/if}}
+				</div>
+  				
+  			</div>
+  		</script>
+  		
+
+  		<script type="text/x-handlebars" data-template-name="writing">
+  			<img id="bgimgtwo" src="bower_components/public/boundbooks.jpg"/>
+  			
+  			<div class="container writing-form-search-container">
+  				<div class="col-md-12">
+	  				{{#if isShowingForm}}
+		  				<button {{action 'showWritingForm'}} class="btn show-writing-form-button">Nevermind...</button>
+		  				<div class="col-md-3" id="writing-form">
+			  				{{input type="text" value=title placeholder="Title..." class="form-control"}}
+			  				{{input type="text" value=author placeholder="Author..." class="form-control"}}
+			  				{{input type="text" value=snippet placeholder="Snippet..." class="form-control"}}
+			  				{{input type="text" value=review placeholder="What's good..." class="form-control"}}
+			  				{{textarea value=text spellcheck=false placeholder="The text..." class="form-control"}}
+			  				<button {{action 'submitWriting'}} class="btn btn-primary form-control">Submit Jams</button>	
+			  			</div>
+			  		{{else}}
+			  			<button {{action 'showWritingForm'}} class="btn show-writing-form-btn">Add some writing</button>
+			  			{{input type=text value=query class="writing-search-box" placeholder="Search..."}}
+			  		{{/if}}
+			  	</div>
+	  		</div>
+	  		
+	  		<div class="container">
+	  			<div class="col-md-12">
+		  			{{#each}}
+		  				{{writing-entry
+		  					title=title
+		  					author=author
+		  					submittedBy=submittedBy
+		  					createdAt=createdAt
+		  					review=review
+		  					snippet=snippet
+		  					text=text
+		  				}}
+		  			{{/each}}
+		  		</div>
+  			</div>
+  		</script>
+
+
+  		<script type="text/x-handlebars" data-template-name="movies">
+  			<div id="movie-page">
+  				<div class="jumbotron center">
+  					<h1>Movies (Work In Progress)</h1>
+  					<button {{action 'toggleShowForm'}} class="btn btn-primary">Submission Form</button>
+  				</div>
+  				
+  				
+
+		  		<div {{bind-attr class="showForm:modal-layer:hide"}}>
+	  				{{#if showForm}}
+
+			  			<div class="new-music-container">
+			  				<button {{action 'toggleShowForm'}} class="exit-btn">Close</button>
+				  			<div class="col-md-3" id="music-form">
+				  				{{input type="text" value=title placeholder="Search for a movie..." class="form-control"}}
+	  							<button {{action 'grabMovie'}} class="btn form-control btn-primary grab-movie-btn">Go</button>
+				  				{{input type="text" value=currentMovie.title placeholder="Title..." class="form-control"}}
+				  				{{input type="text" value=currentMovie.director placeholder="Director..." class="form-control"}}
+				  				{{input type="text" value=currentMovie.cast placeholder="Cast..." class="form-control"}}
+				  				{{input type="number" value=currentMovie.year placeholder="Year..." class="form-control"}}
+				  				{{input type="number" value=currentMovie.critics_score placeholder="Rotten Tomatoes" class="form-control"}}
+				  				{{input type="text" value=trailer_url placeholder="Youtube Trailer..." class="form-control"}}
+				  				{{input type="text" value=big_poster placeholder="Poster URL..." class="form-control"}}
+				  				{{textarea value=comment rows="5" placeholder="Your review..." class="form-control"}}
+				  				<button {{action 'submitMovie'}} class="btn btn-primary form-control">Submit Jams</button>	
+				  			</div>
+				  			<div class="col-md-4 music-item" id="current-music-review">
+					  			{{#if currentMovie}}
+						  			<h3>{{currentMovie.title}} ({{currentMovie.year}})</h3>
+					  				<h4>{{currentMovie.director}}</h4>
+					  				<p>Studio: {{currentMovie.studio}} ({{currentMovie.runtime}} minutes) ({{currentMovie.mpaa_rating}}</p>
+					  				<p>Rotten Tomatoes {{currentMovie.critics_score}}% {{currentMovie.critics_rating}}</p>
+					  				<p>{{currentMovie.synopsis}}</p>
+					  				<p>{{currentMovie.cast}}</p>
+					  				{{#if poster}}
+		  								<img src="{{unbound currentMovie.poster}}" />
+		  							{{/if}}
+					  			{{/if}}
+				  			</div>
+
+				  				
+			  			</div>
+			  		{{/if}}
+  				</div>
+
+		  		<div class="container">
+	  				{{#each}}
+	  					<div class="container">
+		  					<div class="col-md-4 big-poster-case center">
+		  						<img src="{{unbound big_poster}}" />
+		  					</div>
+		  					<div class="movie-entry col-md-6">
+			  					<p class="center"><span class="upper bold">New Movie</span> from <span class="upper bold">{{submittedBy}}</span></p>
+			  					<div class="movie-header-container">
+			  						<div class="poster-container">
+			  							{{!-- <img class="movie-poster" src="{{unbound poster}}" /> --}}
+			  						</div>
+				  					<div class="movie-header">
+					  					<h3>{{title}} </h3>
+						  				<h4>{{director}} ({{year}})</h4>
+						  			</div>
+						  			<span class="movie-score">{{critics_score}}%</span>
+						  		</div>
+				  				<p class="bottom-movie-p">{{comment}}</p>
+				  				<p class="bottom-movie-p">{{cast}}</p>
+				  				{{#if trailer_url}}<p class="center"><a href="{{unbound trailer_url}}">Watch the Trailer</a></p>{{/if}}
+				  			</div>
+				  		</div>
+	  				{{/each}}
+	  			</div>
+	  		</div>
+  		</script>

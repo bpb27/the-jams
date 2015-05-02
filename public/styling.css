@@ -1,0 +1,441 @@
+body{
+	margin-top: 30px;
+	font-family: 'Raleway', sans-serif;
+	font-weight: 100;
+}
+
+video#bgvid {
+	position: fixed; right: 0; bottom: 0;
+	min-width: 100%; min-height: 100%;
+	width: auto; height: auto; z-index: -100;
+	opacity: 0.9;
+	background: no-repeat;
+	background-size: cover;
+}
+
+#frontimg{
+	position: fixed;
+	margin-left: -200px;
+	margin-top: -50px;
+	z-index: -100;
+}
+
+#bgimg {
+	position: fixed; 
+	/*right: 0;*/ 
+	/*bottom: 0; */
+	/*min-width: 100%; */
+	min-height: 50%;
+	width: auto; height: auto; z-index: -100;
+	opacity: 0.9;
+	background: no-repeat;
+	background-size: cover;
+}
+
+.btn:focus{
+    outline-width: 0;
+}
+
+.hide{
+	display: none;
+}
+
+.thin{
+	font-weight: 100;
+}
+
+.bold{
+	font-weight: 700;
+}
+
+.form-control{
+	width: 200px;
+}
+
+.navbar{
+	font-weight: 200;
+}
+
+.navbar .container{
+	margin-left: 50px;
+}
+
+.navbar-right li{
+	cursor: pointer;
+}
+
+.jumbotron{
+	text-align: center;
+	margin-top: 30px;
+	opacity: 0.9;
+}
+
+.jumbotron .form-control{
+	width: 100%;
+}
+
+.white{
+	color: white;
+}
+
+.modal-layer{
+	z-index: 1000;
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	min-width: 100%;
+	min-height: 100%;
+	width: auto;
+	height: auto;
+	background-color: rgba(0,0,0,0.9);
+	background-size: cover;
+}
+
+.modal-layer .exit-btn{
+	margin-top: 70px;
+	position: fixed;
+	margin-left: 38%;
+	background-color: rgb(223, 24, 24);
+	border: none;
+	color: white;
+	border-radius: 3px;
+}
+
+.add-more-btn{
+	background-color: lavender;
+}
+
+.sidebar{
+	position: fixed;
+}
+
+.sidebar .btn{
+	width: 100%;
+	/*font-weight: 600;*/
+	text-transform: uppercase;
+}
+
+.section-header{
+	text-align: center;
+	color: white;
+	font-size: 56px;
+	font-weight: 300;
+	background-color: rgba(60, 60, 60, 0.8);
+}
+
+.section-header h1{
+	font-weight: 300;
+	display: inline-block;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.section-header .btn{
+	font-family: 'Raleway', sans-serif;
+}
+
+#landing-page .col-md-6 label{
+	width: 100px;
+}
+
+label{
+	width: 150px;
+	display: inline-block;
+}
+
+#main-music-player{
+	width: 300px;
+	background-color: rgba(0,0,0,0.5);
+	padding-top: 20px;
+/*	position: fixed;
+	right: 0;
+	margin-right: 30px;*/
+}
+
+#main-music-player p{
+	color: white;
+}
+
+#main-music-player .btn{
+	width: 100%;
+	background-color: lightslategray;
+	color: white;
+}
+
+.search-container{
+	width: 300px;
+}
+
+.search-container div{
+	background-color: rgba(0,0,0,0.5);
+}
+
+.sorting-btn-container {
+	padding-top: 8%;
+}
+
+.search-container .btn-add{
+	border-radius: 0;
+	background-color: #5bc0de;
+	color: white;
+}
+
+.search-container .sorting-btn{
+	width: 80%;
+	display: inline-block;
+	margin: 0px;
+	background-color: lightslategray;
+	color: white;
+	text-align: right;
+}
+
+.search-container .sorting-btn:hover{
+	background-color: rgb(139, 172, 205);
+}
+
+.search-box{
+	width: 100%;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+#music-page{
+	/*background-image: url('/bower_components/public/records.jpg');*/
+	width: 100%;
+	text-align: center;
+	height: 100%;
+	margin-bottom: 400px;
+	margin-top: 50px;
+}
+
+#music-form{
+	margin-top: 100px;
+	margin-left: 200px;
+	background-color: white;
+	padding: 20px;
+	border-radius: 10px;
+}
+
+#music-form .form-control{
+	width: 100%;
+	display: block;
+}
+
+#music-form .uri-container{
+	width: 100%;
+}
+
+#music-form a{
+	text-align: center;
+	margin-left: 10px;
+	margin-top: 6px;
+	width: 5%;
+	text-decoration: none;
+	color: white;
+	display: inline-block;
+	background-color: #428bca;
+	border-radius: 20px;
+}
+
+#music-form a video{ 
+	display:none;
+}
+
+#music-form a:hover video { 
+	display: block;
+	position: absolute;
+	z-index: 100;
+	top: 0px;
+}
+
+#music-form .uri-input{
+	width: 90%;
+	display: inline-block;
+	float: left;
+}
+
+#current-music-review{
+	margin-left: 40px;
+	margin-top: 100px;
+	border: 1px solid white;
+	min-height: 400px;
+}
+
+.btn-danger{
+	width: 50%;
+	margin-top: 25px;
+	margin-bottom: 30px;
+}
+
+.hider-btn{
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+#all-music{
+	padding: 30px;
+	margin-left: 300px;
+}
+
+.music-item{
+	color: white;
+	background-color: rgba(0,0,0,0.8);
+	margin: 0px 0px 15px 0px;
+	text-align: left;
+	padding: 5px 20px 10px 20px;
+}
+
+.music-item.col-md-10{
+	margin-left: 8%;
+}
+
+.music-item.col-md-8{
+	margin-left: 100px;
+}
+
+.music-item.col-md-3{
+	min-height: 320px;
+	border: 1px solid white;
+}
+
+.music-item.col-md-3 .text-wrapper{
+	min-height: 260px;
+}
+
+.music-item.col-md-3 .review-btn, .music-item.col-md-3 .comment-btn, .music-item.col-md-3 .review-hider-btn, .music-item.col-md-3 .video-play-btn{
+	display: none;
+}
+
+
+
+.music-item.col-md-3 .play-btn-wrapper{
+	text-align: center;
+/*	display: inline-block;*/
+}
+
+.music-item.col-md-3 .play-btn {
+	width: 90px;
+	height: 90px;
+	border-radius: 100px;
+	background-color: rgb(144, 57, 57);
+	color: white;
+}
+
+.music-item.col-md-3 .text-wrapper{
+	min-height: 200px;
+}
+
+/*.music-item.col-md-3 .comment-component{
+	display: inline-block;
+}
+
+.music-item.col-md-3 .comment-btn{
+	background-color: green;
+}*/
+
+
+.isShowingPlayer{
+	/*height: 655px;
+	overflow: scroll;*/
+}
+
+.music-item h2{
+	margin-top: 10px;
+}
+
+.music-item .top-bar{
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+.music-item .bottom-bar{
+	text-align: center;
+	margin-bottom: 0px;
+}
+
+.music-item .btn{
+	width: 100%;
+	margin-bottom: 5px;
+}
+
+.music-item .play-btn{
+	color: black;
+	/*font-weight: 600;*/
+	border-color: transparent;
+	background-color: gold;
+}
+
+.music-item .video-play-btn{
+	background-color: darkorange;
+	color: black;
+	/*font-weight: 600;*/
+}
+
+.music-item .review-btn{
+	margin-top: 20px;
+}
+
+.music-item .review{
+	padding: 30px 10px 30px 10px;
+	line-height: 1.5em;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	display: inline-block;
+	background-color: rgba(90, 90, 90, 0.81);
+	margin-bottom: 4px;
+	font-family: 'Raleway', sans-serif;
+	font-size: 1.5em;
+}
+
+.comment-list{
+	color: white;
+	border-radius: 10px;
+	padding: 10px;
+	padding-bottom: 18px;
+	margin-bottom: 20px;
+}
+
+.comment-list p{
+	padding: 10px 10px 10px 10px;
+	margin-left: 20px;
+	display: inline-block;
+	background-color: rgba(90, 90, 90, 0.81);
+	margin-bottom: 4px;
+	font-family: 'Raleway', sans-serif;
+	font-size: 1.0em;
+
+}
+
+.player-component-wrapper{
+	text-align: center;
+}
+
+.upper{
+	text-transform: uppercase;
+}
+
+.comment-component{
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.comment-component .btn{
+	width: 100%;
+	background-color: rgb(208, 73, 155);
+}
+
+.comment-component .submit-comment-btn{
+	width: 70%;
+	margin-bottom: 20px;
+}
+
+.comment-component .form-control{
+	width: 70%;
+	height: 100px;
+	margin-top: 10px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+
+
