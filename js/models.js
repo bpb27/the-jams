@@ -12,6 +12,7 @@
 	App.Listen = DS.Model.extend({	
 		type: DS.attr('string'),
 		name: DS.attr('string'),
+		artist: DS.attr('string'),
 		review: DS.attr('string'),
 		spotifyLink: DS.attr('string'),
 		submittedBy: DS.attr('string'),

@@ -136,24 +136,25 @@
   		<script type="text/x-handlebars" data-template-name="components/listen-entry">
   			<div class="music-item">
   				<h5 class="top-bar thin"><span class="upper"><b>NEW {{type}}</b> FROM <b>{{submittedBy}}</b></span></h5>
-  				<h4 class="thin listen-title">{{name}}</h4>
+  				<p class="listen-title">{{name}}</p>
+  				<p class="listen-artist">{{artist}}</p>
   				<p class="review">{{review}}</p>
 	  			<div class="comment-list">
 	  				{{#each comments}}
 	  					<p><b>{{postedBy}}</b> {{comment}}</p><br>
 	  				{{/each}}
 	  			</div>
-	  			<button class="button-ish comment-btn" {{action 'isShowingCommentForm'}}>Comment</button>
+	  			<button class="button-ish-two comment-btn" {{action 'isShowingCommentForm'}}>Comment</button>
 	  			<div {{bind-attr class=":submit-comment-wrapper isShowingCommentForm:isShowingCommentForm:hide"}}>
 	  				{{comment-button submittingComment=submittingComment}}
 	  			</div>
 	  			{{#if isShowingPlayer}}
-	  				<button class="button-ish" {{action 'showPlayer'}}>Close</button>
+	  				<button class="button-ish-two" {{action 'showPlayer'}}>Close</button>
 	  				<div class="list-listen center">
 	  					<iframe src="https://embed.spotify.com/?uri={{unbound spotifyLink}}" width="100%" height="500" frameborder="0" allowtransparency="true"></iframe>
 	  				</div>
 	  			{{else}}
-	  				<button class="button-ish play-btn" {{action 'showPlayer'}}>Play</button>
+	  				<button class="button-ish-two play-btn" {{action 'showPlayer'}}>Play</button>
 	  			{{/if}}
 	  			
 	  			<h5 class="bottom-bar">{{format-date createdAt}}</h5>
@@ -445,47 +446,25 @@
   			<div id="listen-page">
   			<img id="listen-img" src="/media/vinylcover.jpg"/>
   			
-  			{{#if showingSortButtons}}
-  				<div class="color-bar">
-	  				<div class="color-bar-single cbs-four"></div>
-	  				<div class="color-bar-single cbs-one"></div>
-	  				<div class="color-bar-single cbs-two"></div>
-	  				<div class="color-bar-single cbs-three"></div>
+			<div class="music-control-bar">
+		  		<div class="search-container">
+	  				{{input type=text value=query class="search-box" placeholder="Search..."}}
 	  			</div>
-  				<div class="music-control-bar">
-			  		<div class="search-container">
-		  				{{input type=text value=query class="search-box" placeholder="Search..."}}
-		  			</div>
-		  			<div class="sorting-btn-container">
-		  				<button class="btn sorting-btn" {{action 'showForm'}}>Add Tunes</button>
-		  			</div>
+	  			<div class="sorting-btn-container">
+	  				<button class="btn sorting-btn" {{action 'showForm'}}>Add Tunes</button>
 	  			</div>
-  			{{else}}
-		  		<button class="show-music-controls-btn" {{action 'showSortButtons'}}>&#8658;</button>
-	  		{{/if}}
+  			</div>
   			
-  			{{#if isShowingForm}}
-	  			<div class="modal-layer">
-		  			<div class="col-md-6 col-md-offset-3 listen-form-container">
-		  				<button class="close-listen-form" {{action 'showForm'}}>X</button>
-		  				<div class="listen-form">
-			  				{{view Ember.Select content=listenTypes value=selectedType class="form-control"}}
-			  				{{input type="text" value=name placeholder="Album or Playlist Name" class="form-control"}}
-			  				{{textarea value=review spellcheck=false placeholder="Description" class="form-control"}}
-			  				{{#if showFiveFields}}
-			  					{{input type="text" value=spotifyOne placeholder="Song's Spotify URI" class="form-control"}}
-			  					{{input type="text" value=spotifyTwo placeholder="Song's Spotify URI" class="form-control"}}
-			  					{{input type="text" value=spotifyThree placeholder="Song's Spotify URI" class="form-control"}}
-			  					{{input type="text" value=spotifyFour placeholder="Song's Spotify URI" class="form-control"}}
-			  					{{input type="text" value=spotifyFive placeholder="Song's Spotify URI" class="form-control"}}
-			  				{{else}}
-			  					{{input type="text" value=spotify placeholder="Spotify URI" class="form-control"}}
-			  				{{/if}}
-			  				<button {{action 'submitListen'}} class="btn btn-primary form-control">Submit Jams</button>	
-			  			</div>
-		  			</div>
-		  		</div>
-	  		{{/if}}
+  			<div {{bind-attr class="showingModal:modal-layer:hide"}}>
+  				{{#if showingForm}}
+		  			{{form-template
+	  					customClass='listenFormComponent'
+	  					fields=formFields
+	  					formData='formData'
+	  					closeForm='closeForm'
+	  				}}
+		  		{{/if}}
+  			</div>
   			<div class="container all-listens">
 	  			<div class="col-md-4">
 		  			{{#if songsets}}<h3 class="title-header long-listen-title">Song Sets</h3>{{/if}}
@@ -494,6 +473,7 @@
 		  					identity=id
 		  					type=type
 		  					name=name
+		  					artist=artist
 		  					review=review
 		  					submittedBy=submittedBy
 		  					spotifyLink=spotifyLink
@@ -510,6 +490,7 @@
 		  					identity=id
 		  					type=type
 		  					name=name
+		  					artist=artist
 		  					review=review
 		  					submittedBy=submittedBy
 		  					spotifyLink=spotifyLink
@@ -526,6 +507,7 @@
 		  					identity=id
 		  					type=type
 		  					name=name
+		  					artist=artist
 		  					review=review
 		  					submittedBy=submittedBy
 		  					spotifyLink=spotifyLink

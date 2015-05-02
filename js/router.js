@@ -224,11 +224,22 @@
 		isLoggedIn: Ember.computed.alias('controllers.auth.authed'),
 		currentUser: Ember.computed.alias('controllers.auth.currentUser'),
 		query: '',
-		listenTypes: ['Album', 'Playlist', 'Song Set'],
-		selectedType: 'Album',
-		showingSortButtons: true,
+		showingForm: false,
+		showingModal: false,
 		sortAscending: false,
 		sortProperties: ['createdAt'],
+
+		formFields: [
+			{name: 'type', select: true, options: ['Album', 'Playlist', 'Song Set'], selected: 'Album', dividerStart: true, header: 'Fill this out...'},
+			{name: 'name'},
+			{name: 'artist'},
+			{name: 'review', display: 'Thoughts?'},
+			{name: 'spotifyLinkOne', display: 'Spotify URI', dividerEnd: true},
+			{name: 'spotifyLinkTwo', display: '2nd Spotify URI', dividerStart: true, header: 'For Song Set Only'},
+			{name: 'spotifyLinkThree', display: '3rd Spotify URI'},
+			{name: 'spotifyLinkFour', display: '4th Spotify URI'},
+			{name: 'spotifyLinkFive', display: '5th Spotify URI', dividerEnd: true}
+		],
 		
 		showFiveFields: function () {
 			if (this.get('selectedType') === 'Song Set') return true;
@@ -257,43 +268,44 @@
 		      		return song.get('name').match(rx) || song.get('submittedBy').match(rx) || song.get('type').toString().match(rx);
 		    });
 
+		    console.log(tunes);
+
 		   return tunes;
 	  	},
 		
 		actions: {
-			showSortButtons: function(){
-				this.set('showingSortButtons', !this.get('showingSortButtons'));
+			closeForm: function () {
+				this.set('showingForm', false);
+				this.set('showingModal', false);
 			},
-			
+
 			showForm: function () {
-				this.set('isShowingForm', !this.get('isShowingForm'));
+				if (!this.get('isLoggedIn')) return this.authMessage();
+				this.set('showingModal', true);
+				this.set('showingForm', true);
 			},
 
-			submitListen: function () {
-				var link = '';
-				
-				if (this.get('showFiveFields')) link = this.makeFiveSongLink();
-				else link = this.get('spotify');
+			formData: function (data) {
+				if (!data.name) return alert("A title, sir.");
+				if (!data.review) return alert("A description, sir.");
+				if (!data.spotifyLinkOne) return alert("Did you even submit a link, SIR?");
 
-				var newListen = {
-					type: this.get('selectedType'),
-					name: this.get('name'),
-					review: this.get('review'),
-					spotifyLink: link,
-					submittedBy: this.get('currentUser.name'),
-					submittedByEmail: this.get('currentUser.email'),
-					createdAt: new Date()
-				}
+				if (data.type === 'Album' || data.type === 'Playlist') data['spotifyLink'] = data['spotifyLinkOne']
+				else data['spotifyLink'] = this.makeFiveSongLink(data);
 
-				if (!newListen.name) return alert("A title, sir.");
-				if (!newListen.review) return alert("A description, sir.");
-				if (!newListen.spotifyLink) return alert("Did you even submit a link, SIR?");
+				data['submittedBy'] = this.get('currentUser.name'),
+				data['submittedByEmail'] = this.get('currentUser.email'),
+				data['submittedByID'] = this.get('currentUser.identity'),
+				data['createdAt'] = new Date();
+				['spotifyLinkOne', 'spotifyLinkTwo', 'spotifyLinkThree', 'spotifyLinkFour', 'spotifyLinkFive'].forEach(function(field){
+					delete data[field];
+				});
 
-				var listenEntry = this.store.createRecord('listen', newListen);
-				listenEntry.save().then(function(){
-					this.clearForm();
-					this.send('showForm');
-				}.bind(this))
+				console.log(data);
+
+				//this.submitListen(data);
+				//this.send('closeForm');
+
 			},
 
 			submittingComment: function(text, entryId){
@@ -321,31 +333,23 @@
 			},
 		},
 
-		makeFiveSongLink: function () {
-			var link = 'spotify:trackset:';
+		makeFiveSongLink: function (data) {
+			var link = 'spotify:trackset:Song-Set:';
 
-			if (this.get('name')) link = link + this.get('name') + ':';
-			else link = link + "5-Jim-Jams:" 
+			if (data['spotifyLinkOne']) link = link + data['spotifyLinkOne'].replace('spotify:track:', '');
+			if (data['spotifyLinkTwo']) link = link + ',' + data['spotifyLinkTwo'].replace('spotify:track:', '');
+			if (data['spotifyLinkThree']) link = link + ',' + data['spotifyLinkThree'].replace('spotify:track:', '');
+			if (data['spotifyLinkFour']) link = link + ',' + data['spotifyLinkFour'].replace('spotify:track:', '');
+			if (data['spotifyLinkFive']) link = link + ',' + data['spotifyLinkFive'].replace('spotify:track:', '');
 
-			if (this.get('spotifyOne')) link = link + this.get('spotifyOne').replace('spotify:track:', '');
-			if (this.get('spotifyTwo')) link = link + ',' + this.get('spotifyTwo').replace('spotify:track:', '');
-			if (this.get('spotifyThree')) link = link + ',' + this.get('spotifyThree').replace('spotify:track:', '');
-			if (this.get('spotifyFour')) link = link + ',' + this.get('spotifyFour').replace('spotify:track:', '');
-			if (this.get('spotifyFive')) link = link + ',' + this.get('spotifyFive').replace('spotify:track:', '');
-
-			return link;
-			
+			return link;	
 		},
 
-		clearForm: function () {
-			this.set('name', '');
-			this.set('review', '');
-			this.set('spotify', '');
-			this.set('spotifyOne', '');
-			this.set('spotifyTwo', '');
-			this.set('spotifyThree', '');
-			this.set('spotifyFour', '');
-			this.set('spotifyFive', '');
+		submitListen: function (newListen) {
+			var listenEntry = this.store.createRecord('listen', newListen);
+			listenEntry.save().then(function(data){
+				console.log("Success!", data);
+			}.bind(this))
 		},
 	
 	});
@@ -792,7 +796,7 @@
 					entry.set('spotifyLink', this.get('spotifyLink'));
 					entry.set('soundCloudLink', this.get('soundCloudLink'));
 					entry.save().then(function(){
-						this.transitionToRoute('home');
+						this.transitionToRoute('music');
 					}.bind(this))
 				}.bind(this));
 			},
