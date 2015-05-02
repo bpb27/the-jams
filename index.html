@@ -5,7 +5,7 @@
 		<title>The Jams</title>
 		<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" type="text/css" href="public/stylingtwo.css">
+		<link rel="stylesheet" type="text/css" href="public/styling.css">
 		<link href='//fonts.googleapis.com/css?family=Raleway:100,200,300,400,600,800' rel='stylesheet' type='text/css'>
 		<link href='//fonts.googleapis.com/css?family=Crimson+Text:400,600' rel='stylesheet' type='text/css'>
 		<link href="media/jams.png" rel="icon" type="image/x-icon" />
@@ -303,7 +303,7 @@
 		  		{{/if}}
   			</div>
 
-  			<img id="bgimg" src="public/sam-cooke.png" />
+  			<img id="bgimg" src="media/sam-cooke.png" />
   			<div id="music-page">
 	  			
 	  			<div class="color-bar">
@@ -444,7 +444,6 @@
   		<script type="text/x-handlebars" data-template-name="listen">
   			<div id="listen-page">
   			<img id="listen-img" src="/media/vinylcover.jpg"/>
-  			{{!-- <img id="frontimg" src="/media/grinderman.png"/> --}}
   			
   			{{#if showingSortButtons}}
   				<div class="color-bar">
@@ -662,7 +661,6 @@
 
 
   		<script type="text/x-handlebars" data-template-name="podcast">
-  			{{!-- <img class="podcast-background-img" src="bower_components/public/16917063936_587fcea506_h.jpg" /> --}}
   			<div id="podcast-page">
 	  			<div {{bind-attr class="showingModal:modal-layer:hide"}}>
 	  				{{#if showingForm}}
@@ -741,7 +739,7 @@
   			
 
 		<!-- BowerComponents -->
-		<script src="/public/moment.js"></script>
+		<script src="bower_components/moment/min/moment.min.js"></script>
 		<script src="bower_components/jquery/dist/jquery.js"></script>
 		<script src="bower_components/handlebars/handlebars.js"></script>
 		<script src="bower_components/ember/ember.js"></script>
@@ -749,7 +747,6 @@
 		<script src="bower_components/ember-localstorage-adapter/localstorage_adapter.js"></script>
 		<script src="bower_components/less/dist/less.min.js"></script>
 		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-		
 		
 		<!-- Firebare -->
 		<script src="https://cdn.firebase.com/js/client/1.0.21/firebase.js"></script>

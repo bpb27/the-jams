@@ -366,14 +366,14 @@
 		
 		formFields: [
 			{name: 'type', select: true, options: ['Song', 'Music Video', 'Live Performance'], selected: 'Song', header: 'Fill this out...', dividerStart: true},
-			{name: 'spotifyLink', display: 'Spotify URI', placeholder: 'e.g. spotify:track:4SenxwCmSCIXfklUvmXyNc', videoHelp: '/public/spotify-click-uri.mp4', spotify: true},
-			{name: 'youTubeLink', display: 'YouTube Link', placeholder: 'e.g. https://www.youtube.com/watch?v=mKVARXSHZD8', videoHelp: '/public/youtube-click-uri.mp4'},
+			{name: 'spotifyLink', display: 'Spotify URI', placeholder: 'e.g. spotify:track:4SenxwCmSCIXfklUvmXyNc', videoHelp: '/media/spotify-click-uri.mp4', spotify: true},
+			{name: 'youTubeLink', display: 'YouTube Link', placeholder: 'e.g. https://www.youtube.com/watch?v=mKVARXSHZD8', videoHelp: '/media/youtube-click-uri.mp4'},
 			{name: 'comment', display: 'Review', textarea: true, placeholder: 'What\'s good...', dividerEnd: true},
 			{name: 'title', header: 'And this..', dividerStart: true},
 			{name: 'artist'},
 			{name: 'album'},
 			{name: 'year', dividerEnd: true},
-			{name: 'soundCloudLink', header: 'Optional', display: 'SoundCloud Embed Link', placeholder: 'e.g. https://soundcloud.com/titus...', videoHelp: '/public/soundcloud-click-uri.mp4', videoOrientation: 'left', dividerStart: true},
+			{name: 'soundCloudLink', header: 'Optional', display: 'SoundCloud Embed Link', placeholder: 'e.g. https://soundcloud.com/titus...', videoHelp: '/media/soundcloud-click-uri.mp4', videoOrientation: 'left', dividerStart: true},
 			{name: 'external_source', placeholder: 'Pitchfork, A.V. Club, Rolling Stone...'},
 			{name: 'external_score', placeholder: 'Rating...', dividerEnd: true}
 		],
