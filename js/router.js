@@ -703,6 +703,7 @@
 		showingModal: false,
 		sortAscending: false,
 		sortProperties: ['createdAt'],
+		query: '',
 
 		formFields: [
 			{name: 'podcastName', display: 'Podcast'},
@@ -710,6 +711,17 @@
 			{name: 'embedLink', display: 'Embed Link', textarea: true, placeholder: 'E.g. <embed src="http://www.npr.org/v2/?i=365222419&#...'},
 			{name: 'review', display: 'Review', textarea: true, placeholder: 'What\'s good?'},	
 		],
+
+		filteredContent: function () {
+			var filter = new String(this.get('query')).toString();
+		    var rx = new RegExp(filter, 'gi');
+		    var podcast = this.get('arrangedContent');
+		    
+		    return podcast.filter(function(cast) {
+		      	return cast.get('submittedBy').match(rx) || cast.get('episodeTitle').match(rx) || cast.get('podcastName').match(rx);
+		    }.bind(this));
+	  	
+	  	}.property('arrangedContent', 'query', 'sortAscending', 'length'),
 
 		actions: {
 			

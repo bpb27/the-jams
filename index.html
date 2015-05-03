@@ -527,14 +527,54 @@
   			<div class="container" style="margin-top: 60px; font-weight: 300;">
   				<br><br>
 
-  				<h4>If you have thoughts on any of this, you know how to get in touch.</h4>
-  				<h4>Also, there was recently a big update. If something doesn't work, let me know. You can now see all the users, choose who to follow, and see your own user page. It's all still in very much in the development phase, but everything should work. Also, a podcast page has been added. And now, the player should now not care if you change tabs. For more riveting information, continue reading.</h4>
+  				<h4>If you have thoughts on any of this, you know how to get in touch. And if something doesn't work, por favor let me know.</h4>
+  				<h4>Also, there're a bunch of features on the site. Try using the search bar, or the sort buttons.</h4>
+
+  				<hr>
+
+  				<h4>Highlighted New Content:</h4>
+  				<ol>
+  					<li>When you sign in, everything on the music page that has been added since you last signed in will be highlighted.</li>
+  					<li>When you play new content, the highlight will disappear.</li>
+  				</ol>
+
+  				<hr>
+
+  				<h4>Limit on songs showing:</h4>
+  				<ol>
+  					<li>The songs page will only show 20 entries at a time.</li>
+  					<li>This makes the site a lot faster.</li>
+  					<li>Fear not! It doesn't mean older songs aren't available. If you do any kind of sort or search, it will still search through and pull up everything in the catalogue.</li>
+  				</ol>
+
+  				<hr>
+
+  				<h4>Favorites:</h4>
+  				<ol>
+  					<li>I'm pretty sure these weren't working for awhile, but they should work now.</li>
+  					<li>Click the heart button to favorite or un-favorite a song.</li>
+  					<li>To see all your favorites, hit the "Favorites" button.</li>
+  					<li>To play all your favorites, hit the "Favorites" button, then hit "Play All".</li>
+  					<li>To go back to normal, non-favorite mode, just click the button again.</li>
+  				</ol>
+
+  				<hr>
+
+  				<h4>Users:</h4>
+  				<ol>
+  					<li>You can now choose who to follow. It currently only affects the songs page. </li>
+  					<li>In the future, if this site has a bunch of butts whose songs you don't want to see, you can remove them completely.</li>
+  					<li>There is also a personal "user page", where you can see all the songs, listens, and podcasts you or any other user has posted.</li>
+  					<li>All your entries will appear as buttons, and if you click them, it will play in the audio player.</li>
+  				</ol>
 
   				<hr>
 
   				<h4>Podcasts:</h4>
   				<ol>
-  					<li>So you can now add podcasts. Whereever you see "embed link", there should be HTML-ish code. Just copy that and paste it into the "embed link" field.</li>
+  					<li>You can now add and listen to podcasts. </li>
+  					<li>You can find the "embed link" on the podcast's website (it will usually look something like 'iframe src="http://www.npr.org/player/embed/403266916/403781664" width="100%" height="290" frameborder="0" scrolling="no"iframe).</li>
+  					<li>Just paste the full link in the form, and it should all work.</li>
   				</ol>
 
   				<hr>
@@ -546,46 +586,12 @@
 
   				<hr>
 
-  				<h4>Users:</h4>
-  				<ol>
-  					<li>You can now choose who to follow. It currently only affects the songs page. In the future, if this site has a bunch of buttholes whose songs you don't want to see, you can remove them completely.</li>
-  					<li>There is also a personal "user page", where you can see all the songs you've posted. Eventually, all this new stuff will be a little more in depth and have a purpose. This site will be pretty real in about 6 months, so bear with me.</li>
-  				</ol>
-
-  				<hr>
-
-  				<h4>Favorites:</h4>
-  				<ol>
-  					<li>Click the heart button to favorite or un-favorite a song.</li>
-  					<li>To see all your favorites, hit the "Favorites" button.</li>
-  					<li>To play all your favorites, hit the "Favorites" button, then hit "Play All".</li>
-  				</ol>
-
-  				<hr>
-
   				<h4>Play All:</h4>
   				<ol>
-  					<li>You can now play all songs via YouTube or Spotify.</li>
+  					<li>You can now play all songs via Spotify.</li>
   					<li>Play all will play whatever is showing, so you can hit favorites, then play all your favorites.</li>
   					<li>Or you can search "Morgan Brown", and play all the songs Morgan submitted.</li>
   					<li>They will play in the order that they appear, so you can sort by date submitted or artist and then hit play all.</li>
-  				</ol>
-
-  				<hr> 
-
-  				<h4>Player Location:</h4>
-  				<ol>
-  					<li>The player now sticks to the bottom of the screen.</li>
-  					<li>It is now always visible, which I think is good.</li>
-  				</ol>
-
-  				<hr> 
-
-  				<h4>Spotify Changed their Shit:</h4>
-  				<ol>
-  					<li>When you're in Spotify, and you right-click on a song, it won't say "get song URI" anymore.</li>
-  					<li>Instead, right click and choose "Copy Track Link"</li>
-  					<li>When you paste it into the add tunes form, you should see the title, artist, album, and year magically fill in. That means everything's good.</li>
   				</ol>
 
   				<hr> 
@@ -671,7 +677,7 @@
 	  			</div>
 
 	  			<div class="container content-container">
-	  				{{#each}}
+	  				{{#each filteredContent}}
 	  					<div class="podcast-entry">
 	  						<p class="podcast-entry-title"><button class="btn-primary podcast-play-btn" {{action 'play' this}}>&#9658;</button>{{podcastName}} - {{episodeTitle}} </p>
 	  						<p class="podcast-review"><span class="upper">{{submittedBy}}</span> {{review}}</p>

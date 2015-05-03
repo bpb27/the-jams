@@ -82,8 +82,8 @@
 			for (var i = 0; i < link.length; i++) {
 				if (link[i].indexOf('width=') != -1) 
 					link[i] = 'width=100%';
-				if (link[i].indexOf('height=') != -1) 
-					link[i] = 'height=100';
+				// if (link[i].indexOf('height=') != -1) 
+				// 	link[i] = 'height=100';
 			}
 			return link.join(' ');
 		},

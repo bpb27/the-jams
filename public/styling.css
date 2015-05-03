@@ -1143,10 +1143,6 @@ video#bgvid {
 		display: none;
 	}
 
-	#music-page .music-control-bar .sorting-btn-container {
-		min-width: 450px;
-	}
-
 	#music-page .music-control-bar .sorting-btn-container .sorting-btn {
 		padding-left: 7px;
   		padding-right: 7px;
