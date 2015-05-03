@@ -11,15 +11,12 @@
 	//ROUTER ------------------------------------------------------------
 	App.Router.map(function(){
 		this.resource('listen');
-		this.resource('movies');
 		this.resource('music');
 		this.resource('podcast');
 		this.resource('tune', {path: '/tune/:tune_id'});
 		this.resource('update');
 		this.resource('users');
 		this.resource('user', {path: '/users/:user_id'});
-		this.resource('writing');
-		
 	});
 
 	
@@ -41,12 +38,6 @@
 	App.MusicRoute = Ember.Route.extend({
 		model: function () {
 			return this.store.findAll('music');
-		}
-	});
-
-	App.MoviesRoute = Ember.Route.extend({
-		model: function () {
-			return this.store.findAll('movie');
 		}
 	});
 
@@ -72,12 +63,6 @@
 		model: function (param) {
 			console.log(param);
 			return this.store.find('user', param.user_id);
-		}
-	});
-
-	App.WritingRoute = Ember.Route.extend({
-		model: function () {
-			return this.store.findAll('writing');
 		}
 	});
 
@@ -157,13 +142,11 @@
 		        this.authClient.login('password', {
 		            email: loginEmail.value,
 		            password: loginPassword.value
-		            // rememberMe: remember.value
 		        });
 		    },
 
 		    logout: function() {
 		        this.authClient.logout();
-		        console.log("logging out");
 		        this.transitionToRoute('index');
 		    },
 
@@ -176,17 +159,8 @@
 		        var password = this.get('createPassword');
 		        var confirm = this.get('confirm');
 
-		        if(!firstName || !lastName){
-		        	alert("Your NAME, sir.");
-		        	return false;
-		        }
-
-		        if(confirm !== password){
-		        	alert("Passwords don't match you bumbling twat.")
-		        	return false;
-		        }
-		        
-		        console.log(firstName, lastName, email);
+		        if (!firstName || !lastName) return alert("Your NAME, madam.");
+		        if (confirm !== password) return alert("Passwords don't match you bumbling rump-roast.")
 		        
 		        this.authClient.createUser(email, password, function(error, user) {
 		            if (!error) {
@@ -260,12 +234,12 @@
 
 	  	returnModel: function (type) {
 			var filter = new String(this.get('query')).toString();
-		    var rx = new RegExp(filter, 'gi');//'gi' == global and case-insensitive
-		    var music = this.get('arrangedContent');//Ember property referring to current model
+		    var rx = new RegExp(filter, 'gi');
+		    var music = this.get('arrangedContent');
 
 		    var tunes = music.filter(function(song) {
 		      	if (song.get('type') == type)
-		      		return song.get('name').match(rx) || song.get('submittedBy').match(rx) || song.get('type').toString().match(rx);
+		      		return song.get('name').match(rx) || song.get('artist') ? song.get('artist').match(rx) : false || song.get('submittedBy').match(rx) || song.get('type').toString().match(rx);
 		    });
 
 		   return tunes;
@@ -284,9 +258,9 @@
 			},
 
 			formData: function (data) {
-				if (!data.name) return alert("A title, sir.");
-				if (!data.review) return alert("A description, sir.");
-				if (!data.spotifyLinkOne) return alert("Did you even submit a link, SIR?");
+				if (!data.name) return alert("A title, madam.");
+				if (!data.review) return alert("A description, madam.");
+				if (!data.spotifyLinkOne) return alert("Did you even submit a link, madam?");
 
 				if (data.type === 'Album' || data.type === 'Playlist') data['spotifyLink'] = data['spotifyLinkOne']
 				else data['spotifyLink'] = this.makeFiveSongLink(data);
@@ -749,7 +723,7 @@
 
 				data['submittedBy'] = this.get('currentUser.name'),
 				data['submittedByEmail'] = this.get('currentUser.email'),
-				data['submittedByEmail'] = this.get('currentUser.identity'),
+				data['submittedByID'] = this.get('currentUser.identity'),
 				data['createdAt'] = new Date();
 				
 				var podcastEntry = this.store.createRecord('podcast', data);
@@ -868,26 +842,62 @@
 		isLoggedIn: Ember.computed.alias('controllers.auth.authed'),
 		currentUser: Ember.computed.alias('controllers.auth.currentUser'),
 		mySongs: [],
+		myListens: [],
+		myPodcasts: [],
 
 		userSongs: function () {
 			this.store.find('music').then(function(data){
-				
 				var me = data.content.filter(function(song){
 					return song.get('submittedByEmail') == this.get('email');
 				}.bind(this));
-				
 				this.set('mySongs', me.reverse());
-			
 			}.bind(this));
-		}.observes('email')
+		}.observes('email'),
+
+		userListens: function () {
+			this.store.find('listen').then(function(data){
+				var me = data.content.filter(function(song){
+					return song.get('submittedByEmail') == this.get('email');
+				}.bind(this));
+				this.set('myListens', me.reverse());
+			}.bind(this));
+		}.observes('email'),
+
+		userPodcasts: function () {
+			this.store.find('podcast').then(function(data){
+				var me = data.content.filter(function(song){
+					return song.get('submittedByEmail') == this.get('email');
+				}.bind(this));
+				this.set('myPodcasts', me.reverse());
+			}.bind(this));
+		}.observes('email'),
+
+		actions: {
+			loadSong: function (playObject) {
+				if (playObject.get('spotifyLink')) playObject['embedLink'] = '<iframe id="iframe-player" src="https://embed.spotify.com/?uri=' + playObject.get('spotifyLink') + '" width="100%" height="80" frameborder="0" allowtransparency="true"></iframe>';
+				else if (playObject.get('youTubeLink')) playObject['embedLink'] = '<iframe src="//www.youtube.com/embed/' + playObject.get('youTubeLink') + '?autoplay=1" width="100%" height="32" frameborder="0" allowfullscreen></iframe>';
+				else if (playObject.get('soundCloudLink')) playObject['embedLink'] = '<iframe id="iframe-player" width="100%" height="120" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=' + playObject.get('soundCloudLink') + '&amp;auto_play=true&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>';
+				else return alert('Link is broken');
+
+				playObject['type_of_play'] = 'single';
+				this.get('controllers.auth').send('playRequest', playObject);
+			},
+			
+			loadListen: function (playObject) {
+				playObject['type_of_play'] = 'single';
+				playObject['embedLink'] = '<iframe id="iframe-player" src="https://embed.spotify.com/?uri=' + playObject.get('spotifyLink') + '" width="100%" height="80" frameborder="0" allowtransparency="true"></iframe>';
+				this.get('controllers.auth').send('playRequest', playObject);
+			},
+			
+			loadPodcast: function (param) {
+				param['type_of_play'] = 'podcast';
+				this.get('controllers.auth').send('playRequest', param);
+			}
+		}
+	
+
+
 	});
-
-	
-	
-	
-
-
-
 
 
 
@@ -898,153 +908,6 @@
 
 	Ember.Handlebars.registerBoundHelper('format-shortdate', function(date) {
   		return moment(date).format('l');
-	});
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//GRAVEYARD ---------------------------------
-	App.WritingController = Ember.ArrayController.extend({
-
-		isShowingForm: false,
-
-		filteredContent: function(){
-
-		    var filter = this.get('query');
-		    var rx = new RegExp(filter, 'gi');
-		    var writing = this.get('arrangedContent');
-
-		    var jams = writing.filter(function(piece) {
-		      	return piece.get('name').match(rx) || piece.get('author').match(rx) || piece.get('snippet').match(rx) || piece.get('submittedBy').match(rx) || piece.get('review').match(rx);
-		    });
-
-			return jams;
-
-	  	}.property('arrangedContent', 'query', 'length'),
-		
-		actions: {
-
-			showWritingForm: function () { 
-				this.toggleProperty('isShowingForm');
-			},
-
-			submitWriting: function () {
-					
-				var newWriting = {
-					title: this.get('title'),
-					author: this.get('author'),
-					snippet: this.get('snippet'),
-					review: this.get('review'),
-					text: this.get('text')
-				}
-
-				newWriting['createdAt'] = new Date();
-				newWriting['submittedBy'] = 'Brendan Brown';
-
-				console.log(newWriting);
-
-				var writingEntry = this.store.createRecord('writing', newWriting);
-
-				writingEntry.save().then(function(){
-					console.log("Success?");
-				}.bind(this))
-				
-			}
-		}
-	});
-
-	App.MoviesController = Ember.ArrayController.extend({
-		sortAscending: false,
-
-		ajaxHammer: function (obj) {
-			 return Em.$.ajax(obj).then(function(results){
-				return results;
-			});
-		},
-		
-		actions: {
-			toggleShowForm: function () {
-				this.toggleProperty('showForm');
-			},
-
-			grabMovie: function() {
-				this.set('poster', false);
-				var key = "m3bsv9nk3t6k4xe3yn7qn87x"
-				var title = this.get('title');
-				var url = "https://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=" + key + "&q=" + title + "&page_limit=1";
-				var obj = {url: url, dataType: 'jsonp'};
-				
-				this.ajaxHammer(obj).then(function(result){
-					this.ajaxHammer({url: 'https://api.rottentomatoes.com/api/public/v1.0/movies/' + result.movies[0].id + '.json?apikey=' + key, dataType: 'jsonp'}).then(function(movie){
-						console.log(movie);
-						var cast = '';
-						movie.abridged_cast.forEach(function(actor){
-							cast += actor.name + ', ';
-						})
-						cast = cast.substring(0, cast.length - 2)
-						cast
-						var movieObj = {
-							rtID: movie.id,
-							title: movie.title,
-							year: movie.year,
-							mpaa_rating: movie.mpaa_rating,
-							poster: movie.posters.original,
-							critics_rating: movie.critics_rating,
-							critics_score: movie.ratings.critics_score,
-							runtime: movie.runtime,							
-							cast: cast,
-							director: movie.abridged_directors[0].name,
-							studio: movie.studio,
-							synopsis: movie.synopsis
-						}
-						
-						this.set('poster', true);
-						this.set('currentMovie', movieObj);
-
-					}.bind(this))
-				}.bind(this));
-			},
-
-			submitMovie: function(){
-				
-				var newMovie = this.get('currentMovie');
-				newMovie['createdAt'] = new Date();
-				newMovie['comment'] = this.get('comment');
-				newMovie['submittedBy'] = 'Brendan Brown';
-				newMovie['trailer_url'] = this.get('trailer_url');
-				newMovie['big_poster'] = this.get('big_poster');
-
-				console.log(newMovie);
-
-				var movieEntry = this.store.createRecord('movie', newMovie);
-
-				movieEntry.save().then(function(){
-					this.set('currentMovie', null);
-					this.set('title', '');
-				}.bind(this))
-				
-			}
-		}
-		
 	});
 
 	

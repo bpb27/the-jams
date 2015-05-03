@@ -215,6 +215,25 @@
 		}		
 	});
 
+	App.ListenEntryComponent = Ember.Component.extend({
+	  	classNames: ['listen-component'],
+	  	actions: {
+		    
+		    showPlayer: function () {
+				this.set('isShowingPlayer', !this.get('isShowingPlayer'));
+			},
+			
+			isShowingCommentForm: function () {
+				this.toggleProperty('isShowingCommentForm');
+			},
+			
+			submittingComment: function (param) {
+				this.sendAction('submittingComment', param, this.get('identity'));
+			}
+		
+		}
+	});
+
 
 	App.MusicEntryComponent = Ember.Component.extend({
 	  	
@@ -318,38 +337,6 @@
 
 
 
-	App.ListenEntryComponent = Ember.Component.extend({
-	  	classNames: ['listen-component'],
-	  	actions: {
-		    
-		    showPlayer: function () {
-				this.set('isShowingPlayer', !this.get('isShowingPlayer'));
-			},
-			
-			isShowingCommentForm: function () {
-				this.toggleProperty('isShowingCommentForm');
-			},
-			
-			submittingComment: function (param) {
-				this.sendAction('submittingComment', param, this.get('identity'));
-			}
-		
-		}
-	});
-
-	App.WritingEntryComponent = Ember.Component.extend({
-		isShowingReader: false,
-		actions: {
-			
-			loadReader: function () {
-				this.set('isShowingReader', true);
-			},
-			
-			closeReader: function () {
-				this.set('isShowingReader', false);
-			}
-		
-		}
-	});
+	
 
 })();

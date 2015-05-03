@@ -35,16 +35,16 @@
         		<div class="collapse navbar-collapse">
           			{{#if authed}}
 	          			<ul class="nav navbar-nav">
-	            			<li data-toggle="collapse" data-target=".navbar-collapse">{{#link-to 'music'}}Songs{{/link-to}}</li>
-	            			<li data-toggle="collapse" data-target=".navbar-collapse">{{#link-to 'listen'}}Listens{{/link-to}}</li>
-	            			<li data-toggle="collapse" data-target=".navbar-collapse">{{#link-to 'podcast'}}Podcasts{{/link-to}}</li>
-	            			<li data-toggle="collapse" data-target=".navbar-collapse">{{#link-to 'update'}}Updates{{/link-to}}</li>
-	            			<li data-toggle="collapse" data-target=".navbar-collapse">{{#link-to 'users'}}Users{{/link-to}}</li>
-	            			<li data-toggle="collapse" data-target=".navbar-collapse">{{#link-to 'user' currentUser.identity}}{{currentUser.firstName}}{{/link-to}}</li>
-	            			<li data-toggle="collapse" data-target=".navbar-collapse" {{action 'closePlayer'}} class="close-player-button"><a>Close Player</a></li>
+	            			<li>{{#link-to 'music'}}Songs{{/link-to}}</li>
+	            			<li>{{#link-to 'listen'}}Listens{{/link-to}}</li>
+	            			<li>{{#link-to 'podcast'}}Podcasts{{/link-to}}</li>
+	            			<li>{{#link-to 'update'}}Updates{{/link-to}}</li>
+	            			<li>{{#link-to 'users'}}Users{{/link-to}}</li>
+	            			<li>{{#link-to 'user' currentUser.identity}}{{currentUser.firstName}}{{/link-to}}</li>
+	            			<li {{action 'closePlayer'}} class="close-player-button"><a>Close Player</a></li>
 	         			</ul>
 	         			<ul class="nav navbar-nav navbar-right">
-	         				<li data-toggle="collapse" data-target=".navbar-collapse" {{action 'logout'}}><a>Logout</a></li>
+	         				<li {{action 'logout'}}><a>Logout</a></li>
 	         			</ul>
          			{{/if}}	
   				</div>
@@ -80,7 +80,6 @@
   			<div {{bind-attr class=":music-item isNew:isNew"}}>
   				
   				<div class="all-text-container">
-	  				
 	  				
   					{{#if isFavorite}}
 	  					<div class="music-favorite isFavorite" {{action 'favorite'}}>&#10084;</div>
@@ -323,7 +322,7 @@
 			  				<button class="btn sorting-btn add-tunes-btn" {{action 'toggleShowForm'}}>Add Tunes</button>
 			  				<button class="btn sorting-btn show-favs-btn"{{action 'toggleShowFavorites'}}>Favorites</button>
 			  				<button class="btn sorting-btn video-sort-btn" {{action 'toggleShowOnlyVideos'}}>Videos</button>
-			  				<button class="btn sorting-btn video-sort-btn" {{action 'playAllSpotify'}}>Play All</button>
+			  				<button class="btn sorting-btn play-all-btn" {{action 'playAllSpotify'}}>Play All</button>
 			  				<div class="dropdown">
 								<a id="dLabel" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
 									<button class="btn sorting-btn">Sort By<span class="caret"></span></button>
@@ -643,6 +642,7 @@
 
   		<script type="text/x-handlebars" data-template-name="podcast">
   			<div id="podcast-page">
+  			<img src="media/oldmic.jpg" id="podcast-img" />
 	  			<div {{bind-attr class="showingModal:modal-layer:hide"}}>
 	  				{{#if showingForm}}
 			  			{{form-template
@@ -673,8 +673,8 @@
 	  			<div class="container content-container">
 	  				{{#each}}
 	  					<div class="podcast-entry">
-	  						<p class="podcast-entry-title">{{podcastName}} - {{episodeTitle}} <button class="btn-primary podcast-play-btn" {{action 'play' this}}>&#9658;</button></p>
-	  						<p class="podcast-review">{{review}} - {{submittedBy}}</p>
+	  						<p class="podcast-entry-title"><button class="btn-primary podcast-play-btn" {{action 'play' this}}>&#9658;</button>{{podcastName}} - {{episodeTitle}} </p>
+	  						<p class="podcast-review"><span class="upper">{{submittedBy}}</span> {{review}}</p>
 	  					</div>
 	  				{{/each}}
 		  		</div>
@@ -703,11 +703,23 @@
 
   		<script type="text/x-handlebars" data-template-name="user">
   			<div class="container" id="user-page">
-  				<div class="col-md-12"><h2>{{firstName}} {{lastName}}</h2></div>
-  				<div class="col-md-4">
-  					<h3>Songs</h3>
+  				<div class="col-md-12"><h2 class="user-title">{{firstName}} {{lastName}}</h2></div>
+  				<div class="col-md-12">
+  					<h3>{{mySongs.length}} Songs</h3>
   					{{#each mySongs}}
-  						<p>{{title}} - {{artist}}</p>
+  						<button class="btn btn-info" {{action 'loadSong' this}}>{{title}} - {{artist}}</button>
+  					{{/each}}
+  				</div>
+  				<div class="col-md-12">
+  					<h3>{{myListens.length}} Listens</h3>
+  					{{#each myListens}}
+  						<button class="btn btn-warning" {{action 'loadListen' this}}>{{name}} - {{artist}}</button>
+  					{{/each}}
+  				</div>
+  				<div class="col-md-12">
+  					<h3>{{myPodcasts.length}} Podcasts</h3>
+  					{{#each myPodcasts}}
+  						<button class="btn btn-danger" {{action 'loadPodcast' this}}>{{episodeTitle}} - {{podcastName}}</button>
   					{{/each}}
   				</div>
   			</div>

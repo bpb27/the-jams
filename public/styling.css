@@ -12,6 +12,11 @@ body{
 
 #user-page {
 	padding-top: 50px;
+	padding-bottom: 200px;
+}
+
+#users-page .user-title {
+	border-bottom: 2px solid black;
 }
 
 #users-page {
@@ -195,15 +200,18 @@ body{
 	padding-top: 20px;
 }
 
-.podcast-background-img {
-	height: 100%;
-	width: 100%;
-	z-index: -100;
-	position: fixed;
+#podcast-page #podcast-img {
+	width: auto;
+  	position: fixed;
+  	z-index: -100;
+  	height: 100%;
+  	padding-top: 40px;
+  	padding-bottom: 35px;
 }
 
 #podcast-page .music-control-bar {
 	text-align: left;
+	padding-left: 30px;
 }
 
 .content-container {
@@ -212,35 +220,34 @@ body{
 
 .podcast-play-btn {
 	border: 0;
-  	padding: 5px 20px 5px 20px;
-  	border-radius: 16px;
-  	margin-left: 15px;
-  	height: 40px;
+  	padding: 5px 10px;
+  	margin-right: 15px;
 }
 
 .podcast-entry {
-	margin-bottom: 20px;
+	border: 1px solid black;
+  	margin-bottom: 10px;
+  	border-radius: 2px;
 }
 
 .podcast-entry-title {
 	background: rgb(255, 184, 84);
-  	font-size: 20px;
-  	font-weight: 600;
-  	padding: 15px;
-  	margin: 0;
-  	border-top-left-radius: 10px;
-  	border-top-right-radius: 10px;
+	margin: 0;
+	font-size: 16px;
+	padding-left: 15px;
+	font-weight: 300;
+	border-bottom: 1px solid black;
 }
 
 .podcast-review {
-	background: rgba(0, 221, 248, 1);
-  	padding: 20px;
-  	font-size: 20px;
-  	color: rgba(10, 10, 10, 1);
+	background: rgba(222, 233, 234, 1);
+  	padding: 5px 15px;
   	margin: 0;
-  	border-bottom-left-radius: 5px;
-  	border-bottom-right-radius: 5px;
-  	font-weight: 200;
+}
+
+.podcast-review .upper {
+	margin-right: 7px;
+	font-weight: bold;
 }
 
 
@@ -260,19 +267,6 @@ video#bgvid {
 	width: 100%;
 	height: 100%;
 	z-index: -100;
-}
-
-@media screen and (max-width: 1000px) {
-	#frontimg {
-		height: 100%;
-		width: initial;
-	}
-}
-
-@media screen and (max-height: 795px) {
-	#frontimg {
-		height: 100%;
-	}
 }
 
 #bgimg {
@@ -502,7 +496,6 @@ video#bgvid {
 .navbar .close-player-button {
 	cursor: pointer;
 }
-
 
 
 
@@ -1089,83 +1082,75 @@ video#bgvid {
 	margin-bottom: 30px;
 }
 
+@media screen and (max-width: 1000px) {
+	#frontimg {
+		height: 100%;
+		width: initial;
+	}
+}
+
+@media screen and (max-height: 795px) {
+	#frontimg {
+		height: 100%;
+	}
+}
+
+@media screen and (max-width: 920px) {
+	.navbar {
+		padding-right: 10px;
+	}
+
+	.navbar-header{
+		margin-right: 30px;
+	}
+	.navbar-nav li a{
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	.nav.navbar-nav.navbar-right {
+		margin-right: 15px;
+	}
+}
+
 @media screen and (max-width: 1050px) {	
 	#all-music {
     	padding-top: 85px;
     }
 
-	.music-control-bar .btn.sorting-btn {
+	#music-page .music-control-bar .btn.sorting-btn {
     	font-size: 12px;
     	padding-top: 10px;
     }
 
-    .music-control-bar {
+    #music-page .music-control-bar {
     	text-align: center;
     	min-width: 0;
     }
     
-    .music-control-bar .search-container {
+    #music-page .music-control-bar .search-container {
     	display: block;
     	padding-left: 0px;
     	padding-right: 0px;
     }
 
-    .music-control-bar .search-container .search-box{
+    #music-page .music-control-bar .search-container .search-box{
     	width: 100%;
     }
 }
 
+@media screen and (max-width: 580px) {	
+	#music-page .music-control-bar .add-tunes-btn, #music-page .music-control-bar .video-sort-btn{
+		display: none;
+	}
 
-@media screen and (max-width: 700px) {	
-    .navbar {
-    	padding-left: 0px;
-    	padding-right: 0px;
-    }
-    
-    .navbar .navbar-header {
-    	margin-right: 0px;
-    }
+	#music-page .music-control-bar .sorting-btn-container {
+		min-width: 450px;
+	}
 
-    .music-control-bar .btn.sorting-btn {
-    	padding: 3px;
-    	padding-top: 6px;
-    	font-size: 10px;
-    }
+	#music-page .music-control-bar .sorting-btn-container .sorting-btn {
+		padding-left: 7px;
+  		padding-right: 7px;
+	}
 
-    .music-control-bar .add-tunes-btn {
-    	display: none;
-    }
-
-    .music-control-bar .video-sort-btn {
-    	display: none;
-    }
-
-    .music-control-bar .scroll-up-btn {
-    	display: none;
-    }
-
+	
 }
-
-
-@media screen and (max-width: 480px) {
-    
-    .reader-modal .reader-textarea{
-    	margin: 80px 0px 0px;
-		width: 80%;
-		min-width: 400px;
-		height: 700px;
-		padding-top: 70px;
-		font-family: 'Crimson Text', serif;
-		font-size: 18px;
-		padding: 22px;
-		color: black;
-    }
-
-    .reader-modal .btn {
-    	margin-top: 50px;
-		width: 100%;
-		height: 41px;
-		padding-top: 20px;
-    }
-}
-
