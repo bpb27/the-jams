@@ -9,72 +9,464 @@ body{
     outline: none;
 }
 
-
-#user-page {
-	padding-top: 50px;
-	padding-bottom: 200px;
+.btn:focus{
+    outline-width: 0;
 }
 
-#users-page .user-title {
-	border-bottom: 2px solid black;
+.center{
+	text-align: center;
 }
 
-#users-page {
-	padding-top: 50px;
+.left {
+	text-align: left;
 }
 
-#users-page .search-container {
-	padding: 0;
+.hide{
+	display: none;
 }
 
-#users-page .search-box {
+.thin{
+	font-weight: 100;
+}
+
+.bold{
+	font-weight: 700;
+}
+
+.white{
+	color: white;
+}
+
+.upper{
+	text-transform: uppercase;
+}
+
+.lower{
+	text-transform: lowercase;
+}
+
+
+
+
+
+
+
+/* AUDIO PLAYER VIEW *************************** */
+
+
+.song-player-container {
+	text-align: center;
+	background-color: rgba(0,0,0,0.9);
+	color: rgb(231, 231, 231);
+	position: fixed;
+	z-index: 100;
+	width: 100%;
+	bottom: 0;
+	left: 0;
+	margin: 0;
+}
+
+.song-player-container .title-and-artist {
+	font-weight: 300;
+  	padding-left: 30px;
+  	padding-right: 30px;
+}
+
+.spotify-player-container {
+	height: 0;
+	min-height: 80px;
+}
+
+.song-player-container .close-playing-all-btn{
+	position: absolute;
+	right: -10px;
+	top: -10px;
+	height: 20px;
+	width: 23px;
+	border-radius: 15px;
+	font-size: 10px;
+	padding: 5px;
+	padding-bottom: 16px;
+	background-color: #cc181e;
+	color: white;
+}
+
+.song-player-container p{
+	color: white;
+	background-color: rgba(76, 76, 76, 0.79);
+	padding: 3px;
+	width: 100%;
+	letter-spacing: 1.5px;
+}
+
+.song-player-container .playingAll{
+	padding: 10px;
+	width: 67%;
+	display: inline-block;
+}
+
+.play-control-btn {
+	border: none;
+	padding: 10px;
+	background-color: rgb(117, 113, 113);
+	color: white;
+}
+
+.play-control-btn {
+	border: none;
+	padding: 10px;
+	background-color: rgb(117, 113, 113);
+	color: white;
+}
+
+
+
+
+
+
+/* BUTTONS ***************************/
+
+.edit-btn {
+	display: inline-block;
+	background-color: green;
+	color: white;
+	width: 40px;
+	text-align: center;
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 18px;
+	margin: 5px;
+}
+
+.confirm {
+	background-color: green;
+	color: white;
+}
+
+.discard {
+	background-color: red;
+	color: white;
+}
+
+.button-ish-two {
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1.3;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: pointer;
+	border-radius: 4px;
+	margin: 1px;
+	border: 2px solid rgb(255, 245, 245);
+	width: 100%;
+	padding: 7px;
+	/* box-shadow: 5px 5px 1px rgba(160, 155, 155, 0.42); */
+	border: none;
+	color: white;
+}
+
+.btn-container {
+	text-align: center;
+}
+
+.youtube-btn {
+	background-color: rgb(123, 186, 234);
+}
+
+.soundcloud-btn {
+	background-color: rgb(177, 137, 229);
+}
+
+.spotify-btn {
+	background-color: rgb(228, 114, 114);
+}
+
+.comment-btn {
+	background-color: #E3A979;
+}
+
+.video-btn{
+	background-color: rgb(95, 183, 124);
+}
+
+
+
+
+
+
+/* COMMENT COMPONENT *************************** */
+
+
+.comment-list{
+	color: white;
+	border-radius: 10px;
+	padding: 10px 0 0 20px;
+	margin-bottom: 20px;
+}
+
+.comment-list p{
+	padding: 10px 10px 10px 10px;
+	display: inline-block;
+	background-color: rgba(90, 90, 90, 0.81);
+	margin-bottom: 4px;
+	font-family: 'Raleway', sans-serif;
+	font-size: 1.0em;
+
+}
+
+.comment-component{
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.comment-component .ember-text-area {
+	background-color: rgba(90, 90, 90, 0.81);
+	color: white;
+	font-weight: 300;
+	font-size: 16px;
+	border: none;
+	width: 100%;
+	margin-top: 20px;
+	height: 100px;
+}
+
+.comment-component .ember-text-area::-webkit-input-placeholder {
+   color: white;
+}
+
+.comment-component .ember-text-area::-moz-placeholder {  /* Firefox 19+ */
+   color: white;  
+}
+
+.comment-component .submit-comment-btn {
+	margin-bottom: 20px;
+	background-color: rgb(21, 21, 21);
+	color: white;
+	width: 100%;
+}
+
+
+
+
+
+
+/* CONTROL NAV BAR *****************************/
+
+
+.color-bar {
+	width: 100%;
+	height: 10px;
+	font-size: 0px;
+	position: fixed;
+	z-index: 100;
+}
+
+.color-bar .color-bar-single {
+	width: 25%;
+	display: inline-block;
+	padding-bottom: 15px;
+}
+
+.color-bar .cbs-one {
+	background-color: #009ABE;
+}
+
+.color-bar .cbs-two {
+	background-color: #35B364;
+}
+
+.color-bar .cbs-three {
+	background-color: #F4BD00;
+}
+
+.color-bar .cbs-four {
+	background-color: #EA6060;
+}
+
+.music-control-bar {
+	position: fixed;
+	text-align: center;
+	min-width: 650px;
+	background-color: rgb(67, 65, 65);
+	z-index: 100;
+	width: 100%;
+	padding: 5px;
+	margin-top: 10px;
+}
+
+.music-control-bar div {
+	display: inline-block;
+}
+
+.search-container {
+	padding-right: 25px;
+}
+
+.search-container .search-box{
+	width: 235px;
 	border-radius: 3px;
 	padding: 5px;
 	border: 0;
 	display: inline-block;
-	border: 1px solid rgb(213, 209, 209);
-	line-height: 2;
+}
+
+.music-control-bar .sorting-btn {
+	text-transform: uppercase;
+	font-weight: 200;
+	font-size: 11px;
+	border-radius: 0;
+	background-color: transparent;
+	display: inline-block;
+	margin: 0px;
+	color: white;
+	text-align: right;
+	border-right: 1px solid rgb(62, 62, 68);
+}
+
+.music-control-bar .sorting-btn:hover {
+	background-color: rgb(139, 172, 205);
+}
+
+.show-music-controls-btn {
+	display: inline-block;
+	position: fixed;
+	z-index: 50;
+	left: 0;
+	border: 0;	
+	width: 35px;
+	font-size: 15px;
+  	margin-top: 15px;
+  	background: rgb(54, 54, 54);
+  	color: rgb(131, 131, 131);
+}
+
+
+.music-control-bar .dropdown-menu {
+	background-color: rgb(247, 156, 109);
+	font-size: 10px;
+}
+
+
+.music-control-bar .dropdown-menu li {
+	padding: 6px;
+	text-transform: uppercase;
+	color: white;
+	font-weight: 600;
+}
+
+.music-control-bar .dropdown-menu li:hover {
+	cursor: pointer;
+	background-color: rgb(242, 182, 152)
+}
+
+.music-control-bar .sorting-btn .caret {
+	margin-left: 10px;
+}
+
+
+
+
+
+
+
+/* LANDING PAGE ****************************/
+
+
+video#bgvid {
+	position: fixed; right: 0; bottom: 0;
+	min-width: 100%; min-height: 100%;
+	width: auto; height: auto; z-index: -100;
+	opacity: 0.9;
+	background: no-repeat;
+	background-size: cover;
+}
+
+.jumbotron{
+	text-align: center;
+	margin-top: 30px;
+	opacity: 0.9;
+	padding: 48px;
+}
+
+.jumbotron .form-control{
 	width: 100%;
 }
 
-#users-page .isFollowing {
-	width: 100px;
-  	height: 30px;
-  	border: 0;
-  	border-radius: 1px;
-}
-
-.user-list-item h3 {
-	display: inline-block;
-	width: 220px;
-	cursor: pointer;
-}
-
-.user-list-item button {
-	margin-left: 20px;
-}
-
-/* EDIT TUNE PAGE ***************************/
-.edit-tune-form {
-	margin-top: 100px;
-	font-weight: 300;
-}
-
-.edit-tune-form h1 {
+.jumbotron h1{
 	text-align: center;
 }
 
-.edit-tune-form label {
-	margin-top: 10px;
+
+
+
+
+/* FORM COMPONENT ****************************/
+
+
+.form-component .container {
+	background-color: rgba(250, 223, 223, 0.67);
+	padding: 30px;
+	margin-top: 50px;
+	border-radius: 10px;
+	max-height: 520px;
+  	overflow-y: scroll;
 }
 
-.edit-tune-form .btn-primary {
+.form-btn-block {
 	margin-top: 30px;
 }
 
-.edit-tune-form .btn-danger {
-	margin-top: 10px;
+.form-fields {
+	font-weight: 500;
+	padding-left: 15px;
+	padding-right: 15px;
+	border-radius: 10px;
 }
+
+.form-fields .form-control .btn-primary{
+	display: block;
+	width: 100%;
+	margin-top: 20px;
+}
+
+.form-video-help {
+	display: inline-block;
+}
+
+.form-video-help a {
+	text-align: center;
+	margin-left: 10px;
+	margin-top: 6px;
+	width: 20px;
+	text-decoration: none;
+	color: white;
+	display: inline-block;
+	background-color: #428bca;
+	border-radius: 20px;
+}
+
+.form-video-help a video{ 
+	display:none;
+}
+
+.form-video-help a:hover video { 
+	display: block;
+	position: absolute;
+	z-index: 100;
+	top: 0px;
+}
+
+.form-video-help a.left:hover video { 
+	display: block;
+	position: absolute;
+	z-index: 100;
+	top: 0px;
+	left: 100px;
+}
+
+
 
 
 
@@ -83,6 +475,8 @@ body{
 
 
 /* LISTEN PAGE ***************************/
+
+
 
 #listen-page {
 	padding-top: 20px;
@@ -194,7 +588,77 @@ body{
 
 
 
-/* PODCASTS ***************************/
+
+
+
+/* MODAL LAYER ****************************/
+
+
+.modal-layer{
+	z-index: 1000;
+	position: fixed;
+	min-width: 100%;
+	min-height: 100%;
+	width: auto;
+	height: auto;
+	background-color: rgba(0,0,0,0.9);
+	background-size: cover;
+}
+
+.modal-layer .exit-btn{
+	background-color: rgb(68, 68, 68);
+	width: 10%;
+	margin-left: auto;
+	margin-right: auto;
+	color: rgb(255, 255, 233);
+}
+
+.modal-layer .exit-btn:hover{
+	cursor: pointer;
+}
+
+.modal-layer .video-theater {
+	  margin-left: auto;
+	  margin-right: auto;
+	  text-align: center;
+	  margin-top: 40px;
+}
+
+
+
+
+
+
+
+/* NAVBAR ***************************/
+
+
+.navbar{
+	font-weight: 200;
+	padding-left: 40px;
+	padding-right: 90px;
+}
+
+.navbar-header{
+	margin-right: 100px;
+}
+
+.navbar-right li{
+	cursor: pointer;
+}
+
+.navbar .close-player-button {
+	cursor: pointer;
+}
+
+
+
+
+
+
+
+/* PODCAST PAGE ***************************/
+
 
 #podcast-page {
 	padding-top: 20px;
@@ -251,588 +715,14 @@ body{
 }
 
 
-/* BACKGROUND IMAGES AND VIDEOS ***************************/
 
-video#bgvid {
-	position: fixed; right: 0; bottom: 0;
-	min-width: 100%; min-height: 100%;
-	width: auto; height: auto; z-index: -100;
-	opacity: 0.9;
-	background: no-repeat;
-	background-size: cover;
-}
 
-#frontimg{
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	z-index: -100;
-}
 
-#bgimg {
-	position: fixed; 
-	z-index: -100;
-	height: 100%;
-}
 
-#bgimgtwo{
-	position: fixed;
-	height: 100%;
-	z-index: -100;
-	box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.75);
-}
 
-.song-player-container {
-	text-align: center;
-	background-color: rgba(0,0,0,0.9);
-	color: rgb(231, 231, 231);
-	position: fixed;
-	z-index: 100;
-	width: 100%;
-	bottom: 0;
-	left: 0;
-	margin: 0;
-}
+/* SONGS PAGE *****************************/
 
-.song-player-container .title-and-artist {
-	font-weight: 300;
-  	padding-left: 30px;
-  	padding-right: 30px;
-}
 
-.spotify-player-container {
-	height: 0;
-	min-height: 80px;
-}
-
-.song-player-container .close-playing-all-btn{
-	position: absolute;
-	right: -10px;
-	top: -10px;
-	height: 20px;
-	width: 23px;
-	border-radius: 15px;
-	font-size: 10px;
-	padding: 5px;
-	padding-bottom: 16px;
-	background-color: #cc181e;
-	color: white;
-}
-
-.song-player-container p{
-	color: white;
-	background-color: rgba(76, 76, 76, 0.79);
-	padding: 3px;
-	width: 100%;
-	letter-spacing: 1.5px;
-}
-
-.song-player-container .playingAll{
-	padding: 10px;
-	width: 67%;
-	display: inline-block;
-}
-
-.play-control-btn {
-	border: none;
-	padding: 10px;
-	background-color: rgb(117, 113, 113);
-	color: white;
-}
-
-.play-control-btn {
-	border: none;
-	padding: 10px;
-	background-color: rgb(117, 113, 113);
-	color: white;
-}
-
-/* BUTTON COLORS ***************************/
-
-.edit-btn {
-	display: inline-block;
-	background-color: green;
-	color: white;
-	width: 40px;
-	text-align: center;
-	border-radius: 3px;
-	cursor: pointer;
-	font-size: 18px;
-	margin: 5px;
-}
-
-.confirm {
-	background-color: green;
-	color: white;
-}
-
-.discard {
-	background-color: red;
-	color: white;
-}
-
-.button-ish-two {
-	display: inline-block;
-	font-size: 12px;
-	font-weight: 400;
-	line-height: 1.3;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: middle;
-	cursor: pointer;
-	border-radius: 4px;
-	margin: 1px;
-	border: 2px solid rgb(255, 245, 245);
-	width: 100%;
-	padding: 7px;
-	/* box-shadow: 5px 5px 1px rgba(160, 155, 155, 0.42); */
-	border: none;
-	color: white;
-}
-
-.btn-container {
-	text-align: center;
-}
-
-.youtube-btn {
-	background-color: rgb(234, 123, 123);
-}
-
-.soundcloud-btn {
-	background-color: rgb(184, 184, 184);
-}
-
-.spotify-btn {
-	background-color: rgb(228, 183, 114);
-}
-
-.comment-btn {
-	background-color: #27AFCF;
-}
-
-.video-btn{
-	background-color: rgb(53, 179, 100);
-}
-
-
-
-
-/* GENERAL CLASSES ***************************/
-
-.btn:focus{
-    outline-width: 0;
-}
-
-.center{
-	text-align: center;
-}
-
-.left {
-	text-align: left;
-}
-
-.hide{
-	display: none;
-}
-
-.thin{
-	font-weight: 100;
-}
-
-.bold{
-	font-weight: 700;
-}
-
-.white{
-	color: white;
-}
-
-.upper{
-	text-transform: uppercase;
-}
-
-.lower{
-	text-transform: lowercase;
-}
-
-.title-header {
-	padding: 20px;
-	font-family: Raleway;
-	font-weight: 100;
-	opacity: 0.8;
-	text-align: center;
-	padding: 10px;
-	border-radius: 2px;
-}
-
-.title-header.long-listen-title {
-	color: black;
-	background-color: white;
-	border: 1px solid black;
-	padding-top: 20px;
-	padding-bottom: 20px;
-	margin-right: 5px;
-	margin-left: 5px;
-}
-
-
-
-/* NAVBAR ***************************/
-
-.navbar{
-	font-weight: 200;
-	padding-left: 40px;
-	padding-right: 90px;
-}
-
-.navbar-header{
-	margin-right: 100px;
-}
-
-.navbar-right li{
-	cursor: pointer;
-}
-
-.navbar .close-player-button {
-	cursor: pointer;
-}
-
-
-
-/* SIGN IN PAGE ****************************/
-
-.jumbotron{
-	text-align: center;
-	margin-top: 30px;
-	opacity: 0.9;
-	padding: 48px;
-}
-
-.jumbotron .form-control{
-	width: 100%;
-}
-
-.jumbotron h1{
-	text-align: center;
-}
-
-
-/* MODAL LAYER ****************************/
-
-.modal-layer{
-	z-index: 1000;
-	position: fixed;
-	min-width: 100%;
-	min-height: 100%;
-	width: auto;
-	height: auto;
-	background-color: rgba(0,0,0,0.9);
-	background-size: cover;
-}
-
-.modal-layer .exit-btn{
-	background-color: rgb(68, 68, 68);
-	width: 10%;
-	margin-left: auto;
-	margin-right: auto;
-	color: rgb(255, 255, 233);
-}
-
-.modal-layer .exit-btn:hover{
-	cursor: pointer;
-}
-
-.modal-layer .video-theater {
-	  margin-left: auto;
-	  margin-right: auto;
-	  text-align: center;
-	  margin-top: 40px;
-}
-
-.add-more-btn{
-	background-color: lavender;
-}
-
-.reader-modal{
-	text-align: center;
-	background-color: rgba(102, 88, 152, 1);;
-}
-
-.reader-modal .btn{
-	margin-top: 50px;
-	width: 100%;
-	height: 33px;
-	background-color: black;
-	color: rgb(139, 139, 139);
-}
-
-.reader-modal .reader-textarea {
-	margin: 80px 0px 0px;
-	width: 600px;
-	height: 500px;
-	font-family: 'Crimson Text', serif;
-	font-size: 18px;
-	padding: 22px;
-	color: black;
-}
-
-
-
-/* WRITING PAGE ****************************/
-
-.writing-form-search-container {
-	text-align: center;
-	margin-top: 50px;
-	margin-bottom: 50px;
-}
-
-.writing-form-search-container .writing-search-box {
-	width: 30%;
-	min-width: 300px;
-	padding: 8px;
-	font-weight: 500;
-	display: block;
-	margin: 0;
-	margin-left: auto;
-	margin-right: auto;
-	border-radius: 5px;
-}
-
-.writing-form-search-container .show-writing-form-btn {
-	width: 30%;
-	min-width: 300px;
-	background-color: rgb(81, 148, 213);
-	color: white;
-	margin-top: 20px;
-}
-
-.writingEntry {
-	box-shadow: 0px 0px 15px 8px rgba(0,0,0,0.75);
-	background-color: white;
-	padding: 10px;
-	margin-top: 8px;
-	margin-bottom: 40px;
-	font-weight: 500;	
-}
-
-.writingEntry h6 {
-	text-align: right;
-	margin-right: 20px;
-}
-
-.writingEntry h2 {
-	font-size: 38px;
-	font-weight: 300;
-	text-align: center;
-	margin-bottom: 20px;
-}
-
-.writingEntry p {
-	font-family: 'Crimson Text', serif;
-	font-size: 18px;
-}
-
-.writingEntry .preview {
-	text-align: center;
-	margin-top: 30px;
-	font-weight: 700;
-}
-
-.writingEntry .snippet {
-	margin: 50px;
-}
-
-.writingEntry .read-btn {
-	width: 100%;
-	margin-top: 10px;
-}
-
-
-
-/* MUSIC FORM ****************************/
-
-.form-component .container {
-	background-color: rgba(250, 223, 223, 0.67);
-	padding: 30px;
-	margin-top: 50px;
-	border-radius: 10px;
-	max-height: 520px;
-  	overflow-y: scroll;
-}
-
-.form-btn-block {
-	margin-top: 30px;
-}
-
-.form-fields {
-	font-weight: 500;
-	padding-left: 15px;
-	padding-right: 15px;
-	border-radius: 10px;
-}
-
-.form-fields h3 {
-	text-align: center;
-}
-
-.musicFormComponent .container p {
-	text-align: center;
-  	font-weight: 400;
-}
-
-.form-fields .form-control .btn-primary{
-	display: block;
-	width: 100%;
-	margin-top: 20px;
-}
-
-.form-video-help {
-	display: inline-block;
-}
-
-.form-video-help a {
-	text-align: center;
-	margin-left: 10px;
-	margin-top: 6px;
-	width: 20px;
-	text-decoration: none;
-	color: white;
-	display: inline-block;
-	background-color: #428bca;
-	border-radius: 20px;
-}
-
-.form-video-help a video{ 
-	display:none;
-}
-
-.form-video-help a:hover video { 
-	display: block;
-	position: absolute;
-	z-index: 100;
-	top: 0px;
-}
-
-.form-video-help a.left:hover video { 
-	display: block;
-	position: absolute;
-	z-index: 100;
-	top: 0px;
-	left: 100px;
-}
-
-/*MUSIC CONTROL NAV BAR *****************************/
-
-.color-bar {
-	width: 100%;
-	height: 10px;
-	font-size: 0px;
-	position: fixed;
-	z-index: 100;
-}
-
-.color-bar .color-bar-single {
-	width: 25%;
-	display: inline-block;
-	padding-bottom: 15px;
-}
-
-.color-bar .cbs-one {
-	background-color: #009ABE;
-}
-
-.color-bar .cbs-two {
-	background-color: #35B364;
-}
-
-.color-bar .cbs-three {
-	background-color: #F4BD00;
-}
-
-.color-bar .cbs-four {
-	background-color: #EA6060;
-}
-
-.music-control-bar {
-	position: fixed;
-	text-align: center;
-	min-width: 650px;
-	background-color: rgb(67, 65, 65);
-	z-index: 100;
-	width: 100%;
-	padding: 5px;
-	margin-top: 10px;
-}
-
-.music-control-bar div {
-	display: inline-block;
-}
-
-.search-container {
-	padding-right: 25px;
-}
-
-.search-container .search-box{
-	width: 235px;
-	border-radius: 3px;
-	padding: 5px;
-	border: 0;
-	display: inline-block;
-}
-
-.music-control-bar .sorting-btn {
-	text-transform: uppercase;
-	font-weight: 200;
-	font-size: 11px;
-	border-radius: 0;
-	background-color: transparent;
-	display: inline-block;
-	margin: 0px;
-	color: white;
-	text-align: right;
-	border-right: 1px solid rgb(62, 62, 68);
-}
-
-.music-control-bar .sorting-btn:hover {
-	background-color: rgb(139, 172, 205);
-}
-
-.show-music-controls-btn {
-	position: fixed;
-	left: 0;
-	display: inline-block;
-	width: 40px;
-	border: 0;
-	border-bottom-right-radius: 6px;
-	font-size: 24px;
-	background-color: rgb(89, 149, 228);
-	z-index: 50;
-}
-
-
-.music-control-bar .dropdown-menu {
-	background-color: rgb(247, 156, 109);
-}
-
-
-.music-control-bar .dropdown-menu li {
-	padding: 6px;
-	text-transform: uppercase;
-	color: white;
-	font-weight: 600;
-}
-
-.music-control-bar .dropdown-menu li:hover {
-	cursor: pointer;
-	background-color: rgb(242, 182, 152)
-}
-
-.music-control-bar .sorting-btn .caret {
-	margin-left: 10px;
-}
-
-
-/* MUSIC CONTAINER *****************************/
 
 #all-music {
 	padding-top: 50px;
@@ -841,6 +731,12 @@ video#bgvid {
 
 #music-page {
 	margin-top: 50px;
+}
+
+#music-page #bgimg {
+	position: fixed; 
+	z-index: -100;
+	height: 100%;
 }
 
 #all-music .col-md-4 {
@@ -861,6 +757,26 @@ video#bgvid {
 	margin: 0px 0px 15px 0px;
 	padding: 5px 20px 10px 20px;
 	position: relative;
+}
+
+.title-header {
+	padding: 20px;
+	font-family: Raleway;
+	font-weight: 100;
+	opacity: 0.8;
+	text-align: center;
+	padding: 10px;
+	border-radius: 2px;
+}
+
+.title-header.long-listen-title {
+	color: black;
+	background-color: white;
+	border: 1px solid black;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	margin-right: 5px;
+	margin-left: 5px;
 }
 
 .music-item.isNew {
@@ -948,10 +864,6 @@ video#bgvid {
 	display: inline-block;
 }
 
-.player-component-wrapper {
-	text-align: center;
-}
-
 .music-item .edit-container {
 	width: 100%;
 	text-align: center;
@@ -965,122 +877,98 @@ video#bgvid {
 
 
 
-/* COMMENT COMPONENT **********************/
 
-.comment-list{
-	color: white;
-	border-radius: 10px;
-	padding: 10px 0 0 20px;
-	margin-bottom: 20px;
-}
 
-.comment-list p{
-	padding: 10px 10px 10px 10px;
-	display: inline-block;
-	background-color: rgba(90, 90, 90, 0.81);
-	margin-bottom: 4px;
-	font-family: 'Raleway', sans-serif;
-	font-size: 1.0em;
 
-}
 
-.comment-component{
-	text-align: center;
-	margin-bottom: 20px;
-}
+/* TUNE PAGE ***************************/
 
-.comment-component .ember-text-area {
-	background-color: rgba(90, 90, 90, 0.81);
-	color: white;
+
+.edit-tune-form {
+	margin-top: 100px;
 	font-weight: 300;
-	font-size: 16px;
-	border: none;
-	width: 100%;
-	margin-top: 20px;
-	height: 100px;
 }
 
-.comment-component .ember-text-area::-webkit-input-placeholder {
-   color: white;
+.edit-tune-form h1 {
+	text-align: center;
 }
 
-.comment-component .ember-text-area::-moz-placeholder {  /* Firefox 19+ */
-   color: white;  
+.edit-tune-form label {
+	margin-top: 10px;
 }
 
-.comment-component .submit-comment-btn {
-	margin-bottom: 20px;
-	background-color: rgb(21, 21, 21);
-	color: white;
-	width: 100%;
+.edit-tune-form .btn-primary {
+	margin-top: 30px;
+}
+
+.edit-tune-form .btn-danger {
+	margin-top: 10px;
 }
 
 
 
-/*MOVIE ENTRY ******************************/
 
-#movie-page{
-	min-height: 1500px;
-	padding: 30px;
+
+/* USERS PAGE *************************** */
+
+
+
+#users-page {
+	padding-top: 50px;
 }
 
-.big-poster-case img{
-	width: 350px;
+#users-page .search-container {
+	padding: 0;
 }
 
-.movie-entry{
-	margin-left: 70px;
-	border: 3px solid rgb(255, 131, 131);
+#users-page .search-box {
+	border-radius: 3px;
 	padding: 5px;
-	background-color: rgba(203, 49, 49, 0.81);
-	color: white;
-}
-
-.movie-entry .center{
-	margin-bottom: 0px;
-}
-
-.movie-entry .movie-header-container{
-	height: 115px;
-}
-
-.movie-entry .movie-header-container .poster-container{
+	border: 0;
 	display: inline-block;
-	float: left;
-	padding-top: 20px;
+	border: 1px solid rgb(213, 209, 209);
+	line-height: 2;
+	width: 100%;
 }
 
-.movie-entry .movie-header-container .movie-header{
+#users-page .isFollowing {
+	width: 100px;
+  	height: 30px;
+  	border: 0;
+  	border-radius: 1px;
+}
+
+.user-list-item h3 {
 	display: inline-block;
+	width: 220px;
+	cursor: pointer;
+}
+
+.user-list-item button {
 	margin-left: 20px;
 }
 
-.movie-entry .movie-header-container .movie-header h3{
-	font-size: 34px;
+
+
+
+/* USER PAGE *************************** */
+
+
+
+#user-page {
+	padding-top: 50px;
+	padding-bottom: 200px;
 }
 
-.movie-entry .movie-header-container .movie-score{
-	float: right;
-	padding-top: 26px;
-	font-size: 16px;
-	font-weight: 700;
-	font-family: sans-serif;
-	padding-right: 15px;
+#user-page .user-title {
+	border-bottom: 3px solid black;
+  	padding-bottom: 7px;
 }
 
-.movie-entry .bottom-movie-p{
-	margin-left: 20px;
-}
 
-.movie-entry a{
-	color: #FFFFFF;
-	text-decoration: none;
-	font-weight: 700;
-}
 
-.grab-movie-btn{
-	margin-bottom: 30px;
-}
+
+/* MEDIA SCREEN *************************** */
 
 @media screen and (max-width: 1000px) {
 	#frontimg {

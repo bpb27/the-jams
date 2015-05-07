@@ -303,8 +303,9 @@
 		  		{{/if}}
   			</div>
 
-  			<img id="bgimg" src="media/sam-cooke.png" />
+  			
   			<div id="music-page">
+  			<img id="bgimg" src="media/sam-cooke.png" />
 	  			
 	  			<div class="color-bar">
 	  				<div class="color-bar-single cbs-one"></div>
@@ -346,26 +347,7 @@
 		  		
 		  		<div id="all-music" class="container">
 	  				
-	  				<div>
-	  					<h1 class="title-header long-listen-title">Songs</h1>
-	  				</div>
-
-		  			<div {{bind-attr class="playingTracks:song-player-container:hide col-md-12"}}>
-		  				<button {{bind-attr class="playingAll:play-control-btn:hide"}} {{action 'playPrevious'}}>Prev</button>
-		  				<p {{bind-attr class="playingAll:playingAll hidePlayerTitleBar:hide"}}>
-		  					<span class="upper"><b>{{currentPlay.title}}</b></span> by <span class="upper"><b>{{currentPlay.artist}}</b></span>
-		  				</p>
-		  				<button {{bind-attr class="playingAll:play-control-btn:hide :play-next-btn"}} {{action 'playNext'}}>Next</button>
-		  				<div class="player-container"></div>
-	  				</div>
-
-	  				<div {{bind-attr class="playingAllSpotify:song-player-container:hide col-md-12"}}>
-	  					{{#if playingAllSpotify}}
-		  					<div class="player-container">
-		  						<iframe src="https://embed.spotify.com/?uri={{unbound playAllSpotifyLinks}}" width="100%" height="" frameborder="0" allowtransparency="true"></iframe>
-		  					</div>
-	  					{{/if}}
-	  				</div>
+	  				<div><h1 class="title-header long-listen-title">Songs</h1></div>
 
 		  			{{#with currentUser as currentUserInfo}}
 			  			{{#each filteredContent}}
