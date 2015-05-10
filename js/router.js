@@ -116,6 +116,15 @@
 	    	}.bind(this));
 	  	},
 
+	  	tagsFinder: function () {
+	  		this.store.findAll('tag').then(function(tags){
+	  			var collection = tags.map(function(tag){
+	  				return tag.get('name');
+	  			});
+	  			this.set('tagsCollections', collection);
+	  		}.bind(this));
+	  	}.on('init'),
+
 	  	clearRegistrationForm: function(){
 	    	this.set('firstName', '');
 	        this.set('lastName', '');
@@ -273,10 +282,8 @@
 					delete data[field];
 				});
 
-				console.log(data);
-
-				//this.submitListen(data);
-				//this.send('closeForm');
+				this.submitListen(data);
+				this.send('closeForm');
 
 			},
 
@@ -333,6 +340,7 @@
 		currentUser: Ember.computed.alias('controllers.auth.currentUser'),
 		showingSortButtons: true,
 		favorites: false,
+		songLimit: 20,
 		showModal: false,
 		sortAscending: false,
 		sortProperties: ['createdAt'],
@@ -370,7 +378,15 @@
 		      	if (this.get('currentUser.follows'))
 		      		if (this.get('currentUser.follows').indexOf(song.get('submittedByID')) == -1) return;
 
-		      	return song.get('title').match(rx) || song.get('artist').match(rx) || song.get('album').match(rx) || song.get('submittedBy').match(rx) || song.get('year').toString().match(rx) || song.get('type').toString().match(rx);
+		      	if (song.get('tags')) {
+		      		var tags = [];
+		      		song.get('tags').forEach(function(tag){
+		      			tags.push(tag.get('name'));
+		      		})
+		      	}
+		      		
+
+		      	return song.get('title').match(rx) || song.get('artist').match(rx) || song.get('album').match(rx) || song.get('submittedBy').match(rx) || song.get('year').toString().match(rx) || song.get('type').toString().match(rx) || tags.join().match(rx);
 		    
 		    }.bind(this));
 
@@ -380,7 +396,7 @@
 		    	return tune;
 		    });
 
-		    tunes = tunes.slice(0, 20);
+		    tunes = tunes.slice(0, this.get('songLimit'));
 
 		    this.gatherPlayAllLinks(tunes);
 
@@ -404,7 +420,7 @@
 
 			return divide(tunes_one).concat(divide(tunes_two)).concat(divide(tunes_three));
 
-	  	}.property('arrangedContent', 'query', 'sortAscending', 'length', 'showOnlyVideos', 'currentUser.favorites', 'currentUser.follows', 'favorites'),
+	  	}.property('arrangedContent', 'query', 'sortAscending', 'length', 'showOnlyVideos', 'currentUser.favorites', 'currentUser.follows', 'favorites', 'songLimit'),
 		
 		actions: {
 			closeForm: function () {
@@ -482,6 +498,10 @@
 
 			playAllYoutube: function () {
 				this.get('controllers.auth').send('playRequest', {all_songs_array: this.get('playAllLinks'), type_of_play: 'all_youtube'});
+			},
+
+			loadMoreSongs: function () {
+				this.set('songLimit', this.get('songLimit') + 15);
 			},
 
 			loadPlayer: function(playObject){
@@ -590,6 +610,13 @@
 				this.send('playAll');
 			},
 
+			searchTag: function (tag) {
+				if (this.get('query') === tag) this.set('query', '');
+				else this.set('query', tag);
+
+				this.send('scrollUp');
+			}, 
+
 			scrollUp: function () {
 				$("html, body").animate({ scrollTop: 0 }, "slow");
 			},
@@ -625,22 +652,51 @@
 				
 			},
 
-			toggleShowFavorites: function () {
-				this.set('favorites', !this.get('favorites'));
+			submittingTag: function (text, entryId) {
+				if (!text) return alert("Don't submit a blank tag you twat.");
+				if (!this.get('isLoggedIn')) return this.authMessage();
+				text = text.toLowerCase();
+
+				var newTag = {name: text};
+				var existingTag = null;
+				var tag;
+
+				this.store.find('tag').then(function(tags){
+					if (tags.findBy('name', text)) existingTag = tags.findBy('name', text);
+					else tag = this.store.createRecord('tag', newTag);
+				
+					this.store.find('music', entryId).then(function(entry){
+						entry.get('tags').then(function(tags){
+							if (existingTag)
+								tags.pushObject(existingTag)
+							else
+								tags.pushObject(tag)
+							entry.save();
+						})
+					})
+
+					if (existingTag) existingTag.save();
+					else tag.save();
+
+				}.bind(this));
+
+				
 			},
 
-			toggleShowForm: function () {
-				if (!this.get('isLoggedIn')) return this.authMessage();
-				
-				this.clearForm();
+			toggleShowFavorites: function () {
+				this.set('favorites', !this.get('favorites'));
+				this.set('query', '');
+			},
 
+			showForm: function () {
+				if (!this.get('isLoggedIn')) return this.authMessage();
 				this.set('showingModal', true);
 				this.set('showingForm', true);
-
 			},
 
 			toggleShowOnlyVideos: function(){
 				this.set('showOnlyVideos', !this.get('showOnlyVideos'));
+				this.set('query', '');
 			},
 
 			updatingEntry: function (update) {
@@ -660,19 +716,6 @@
 			if (!this.get('isLoggedIn')) return alert('Please sign in. Gracias.');
 		},
 
-		clearForm: function () {
-			this.set('selectedMusicType', 'Song');
-			this.set('title', '');
-			this.set('artist', '');
-			this.set('album', '');
-			this.set('year', '');
-			this.set('comment', '');
-			this.set('youTubeLink', '');
-			this.set('spotifyLink', '');
-			this.set('soundCloudLink', '');
-			this.set('limitSpotifyCalls', false);
-		},
-
 		gatherPlayAllLinks: function (filteredModel) {
 			var playAllLinks = [];
 			var playAllSpotifyLinks = 'spotify:trackset:All Jams:'
@@ -690,7 +733,7 @@
 		    this.set('playAllSpotifyLinks', playAllSpotifyLinks);
 		    this.set('playAllLinks', playAllLinks);
 		    this.set('currentTrackNumber', 0);
-		},
+		}
 
 	});	
 

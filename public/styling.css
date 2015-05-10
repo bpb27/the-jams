@@ -13,6 +13,11 @@ body{
     outline-width: 0;
 }
 
+input[type="text"].form-control {
+	color: black;
+  	font-weight: 300;
+}
+
 .center{
 	text-align: center;
 }
@@ -176,7 +181,7 @@ body{
 }
 
 .soundcloud-btn {
-	background-color: rgb(177, 137, 229);
+	background-color: rgb(42, 168, 180);
 }
 
 .spotify-btn {
@@ -190,6 +195,13 @@ body{
 .video-btn{
 	background-color: rgb(95, 183, 124);
 }
+
+.load-more-btn {
+	background: rgb(67, 65, 65);
+  	font-size: 18px;
+  	height: 43px;
+}
+
 
 
 
@@ -801,12 +813,13 @@ video#bgvid {
 }
 
 .music-item .top-bar {
-	  text-align: center;
-	  width: 80%;
-	  margin: auto;
-	  margin-top: 10px;
-	  margin-bottom: 30px;
-	  font-size: 11px;
+	text-align: center;
+	width: 80%;
+	margin: auto;
+	margin-top: 10px;
+	margin-bottom: 30px;
+	font-size: 11px;
+	cursor: pointer;
 }
 
 .music-item .bottom-bar {
@@ -829,6 +842,7 @@ video#bgvid {
 	margin-bottom: 10px;
 	font-size: 24px;
 	font-weight: 300;
+	cursor: pointer;
 }
 
 .music-item .album {
@@ -876,6 +890,54 @@ video#bgvid {
 }
 
 
+
+
+
+/* TAGS COMPONENT ***************************/
+
+.tag-component {
+	margin-top: 10px;
+}
+
+.tag-list {
+	margin-bottom: 20px;
+}
+
+.tag-btn {
+	font-size: 10px;
+  	padding: 4px;
+}
+
+.tag-component .form-control {
+	width: 40%;
+	display: inline-block;
+}
+
+.tag-btn-plus {
+	font-size: 22px;
+  	width: 21px;
+  	border-radius: 13px;
+  	line-height: 0.4;
+  	color: white;
+  	background-color: rgb(51, 122, 183);
+  	padding: 5px;
+}
+
+.tag-btn-text {
+	width: 80px;
+	font-size: 10px;
+	height: 24px;
+	border-radius: 4px;
+}
+
+.submit-tag-btn {
+	width: 15%;
+	vertical-align: top;
+}
+
+.tag-suggestion {
+	cursor: pointer;
+}
 
 
 

@@ -89,26 +89,37 @@
 	  				
 	  				<div class="text-wrapper thin">
 						<h5 class="top-bar">
-							<span class="upper" {{action 'editWhole' on='doubleClick'}}><b>NEW {{type}}</b> FROM <b>{{submittedBy}}</b></span>
+							<span class="upper" {{bind-attr title=canEdit}} {{action 'editWhole'}}><b>NEW {{type}}</b> FROM <b>{{submittedBy}}</b></span>
 						</h5>
 		  				<div class="title" {{action 'edit' 'title' on='doubleClick'}}>{{title}}</div>
-		  				<div class="artist" {{action 'edit' 'artist' on='doubleClick'}}>{{artist}}</div>
+		  				<div class="artist" {{action 'edit' 'artist' on='doubleClick'}}><span {{action 'searchTag' artist}}> {{artist}}</span></div>
 		  				<div class="album" {{action 'edit' 'album' on='doubleClick'}}>{{album}}</div>
-		  				{{#if year}}
-		  					<div class="year" {{action 'edit' 'year' on='doubleClick'}}>({{year}})</div>
-		  				{{/if}}
+		  				<div class="year" {{action 'edit' 'year' on='doubleClick'}}>({{year}})</div>
 		  			</div>
 	  				
 	  				<div class="review-wrapper">
 						<div class="review" {{action 'edit' 'review' on='doubleClick'}}>{{comment}}</div>
-						{{#if external_source}}
-							<p class="review external">And {{external_source}} gave it a {{external_score}}</p>
-						{{/if}}
 						<div class="comment-list">
 			  				{{#each comments}}
 			  					<p><b>{{postedBy}}</b> {{comment}}</p><br>
 			  				{{/each}}
 	  					</div>
+	  					<div class="tag-list">
+			  				{{#each tags}}
+			  					<button class="btn btn-primary tag-btn" {{action 'searchTag' name}}>{{name}}</button>
+			  				{{/each}}
+
+			  				{{#if tags.length}}
+			  					<button class="btn tag-btn-plus" {{action 'showTagForm'}}>+</button>
+			  				{{else}}
+			  					<button class="btn tag-btn-plus tag-btn-text" {{action 'showTagForm'}}>Add tags +</button>
+			  				{{/if}}
+
+			  				<div {{bind-attr class=":submit-tag-wrapper isShowingTagForm:isShowingTagForm:hide"}}>
+	  							{{tag-button submittingTag=submittingTag ctrlName='music'}}
+	  						</div>
+			  				
+			  			</div>
 	  				</div>
 
 	  			</div>
@@ -120,6 +131,7 @@
 	  				{{#if spotifyLink}}<button class="button-ish-two spotify-btn" {{action "loadPlayer" this spotifyLink 'spotify'}}>Spotify</button>{{/if}}
 	  				{{#if soundCloudLink}}<button class="button-ish-two soundcloud-btn" {{action "loadPlayer" this soundCloudLink 'soundcloud'}}>SoundCloud</button>{{/if}}
 	  				<button class="button-ish-two comment-btn" {{action 'showCommentForm'}}>Comment</button>
+	  				
 	  			</div>
 
 	  			<div {{bind-attr class=":submit-comment-wrapper isShowingCommentForm:isShowingCommentForm:hide"}}>
@@ -143,6 +155,13 @@
 	  					<p><b>{{postedBy}}</b> {{comment}}</p><br>
 	  				{{/each}}
 	  			</div>
+	  			<div class="tag-list">
+	  				<p>
+	  				{{#each tags}}
+	  					<button class="btn btn-primary tag-btn" {{action 'searchTag' this}}>{{name}}</button>
+	  				{{/each}}
+	  				</p>
+	  			</div>
 	  			<button class="button-ish-two comment-btn" {{action 'isShowingCommentForm'}}>Comment</button>
 	  			<div {{bind-attr class=":submit-comment-wrapper isShowingCommentForm:isShowingCommentForm:hide"}}>
 	  				{{comment-button submittingComment=submittingComment}}
@@ -165,6 +184,12 @@
 		<script type="text/x-handlebars" data-template-name="components/comment-button">
 			{{textarea value=commentText placeholder="Thoughts...?" class="form-control"}}
 			<button class="btn submit-comment-btn" {{action 'submitComment'}}>Submit</button>
+  		</script>
+
+  		<script type="text/x-handlebars" data-template-name="components/tag-button">
+			{{input value=tagText placeholder="Tag..." class="form-control"}}
+			<span {{action 'setSuggestion'}} class="tag-suggestion">{{input value=suggestedText placeholder="Suggestion..." class="form-control tag-suggestion" readonly=true}}</span>
+			<button class="btn submit-tag-btn confirm" {{action 'submitTag'}}>✓</button>
   		</script>
 
  
@@ -320,7 +345,7 @@
 			  				{{input type=text value=query class="search-box" placeholder="Search..."}}
 			  			</div>
 			  			<div class="sorting-btn-container">
-			  				<button class="btn sorting-btn add-tunes-btn" {{action 'toggleShowForm'}}>Add Tunes</button>
+			  				<button class="btn sorting-btn add-tunes-btn" {{action 'showForm'}}>Add Tunes</button>
 			  				<button class="btn sorting-btn show-favs-btn"{{action 'toggleShowFavorites'}}>Favorites</button>
 			  				<button class="btn sorting-btn video-sort-btn" {{action 'toggleShowOnlyVideos'}}>Videos</button>
 			  				<button class="btn sorting-btn play-all-btn" {{action 'playAllSpotify'}}>Play All</button>
@@ -363,12 +388,15 @@
 			  					year=year
 			  					comment=comment
 			  					comments=comments
+			  					tags=tags
 			  					youTubeLink=youTubeLink
 								spotifyLink=spotifyLink
 								soundCloudLink=soundCloudLink
 			  					currentUserInfo=currentUserInfo
+			  					searchTag='searchTag'
 			  					submittedByEmail=submittedByEmail
 			  					submittingComment='submittingComment'
+			  					submittingTag='submittingTag'
 			  					updatingEntry='updatingEntry'
 			  					editWhole='editWhole'
 			  					loadPlayer='loadPlayer'
@@ -380,6 +408,9 @@
 			  			{{/each}}
 			  		{{/with}}
 
+		  			{{#unless query}}
+		  				<button class="button-ish-two load-more-btn" {{action 'loadMoreSongs'}}>gimme more...</button>
+		  			{{/unless}}
 		  		</div>
 	  		</div>
   		</script>
@@ -511,6 +542,17 @@
 
   				<h4>If you have thoughts on any of this, you know how to get in touch. And if something doesn't work, por favor let me know.</h4>
   				<h4>Also, there're a bunch of features on the site. Try using the search bar, or the sort buttons.</h4>
+
+  				<hr>
+
+  				<h4>Tags</h4>
+  				<ol>
+  					<li>Click on tags to sort.</li>
+  					<li>Click on the tag again to go back to the normal view</li>
+  					<li>You'll see it adds the tag to the search bar. You can also search for tags</li>
+  					<li>When you're adding a tag, existing tags that match your entry will be suggested</li>
+  					<li>Click on the suggested tag to add it automatically</li>
+  				</ol>
 
   				<hr>
 

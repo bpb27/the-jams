@@ -18,7 +18,8 @@
 		submittedBy: DS.attr('string'),
 		submittedByEmail: DS.attr('string'),
 		createdAt: DS.attr('date'),
-  		comments: DS.hasMany('comment', { async: true })
+  		comments: DS.hasMany('comment', { async: true }),
+  		tags: DS.hasMany('tag', { async: true })
 	});
 
 	App.Music = DS.Model.extend({
@@ -39,7 +40,8 @@
 		submittedByEmail: DS.attr('string'),
 		submittedByID: DS.attr('string'),
 		createdAt: DS.attr('date'),
-  		comments: DS.hasMany('comment', { async: true })
+  		comments: DS.hasMany('comment', { async: true }),
+  		tags: DS.hasMany('tag', { async: true })
 	});
 
 	App.Podcast = DS.Model.extend({
@@ -51,6 +53,12 @@
 		submittedByEmail: DS.attr('string'),
 		submittedByID: DS.attr('string'),
 		createdAt: DS.attr('date'),
+	});
+
+	App.Tag = DS.Model.extend({
+		name: DS.attr('string'),
+		music: DS.hasMany('music'),
+		listen: DS.hasMany('listen')
 	});
 
 	App.Writing = DS.Model.extend({

@@ -229,6 +229,7 @@
 			
 			submittingComment: function (param) {
 				this.sendAction('submittingComment', param, this.get('identity'));
+				this.send('showCommentForm');
 			}
 		
 		}
@@ -243,6 +244,9 @@
 	  	currentUserFavs: Em.computed.alias('currentUserInfo.favorites'),
 	  	lastVisit: Em.computed.alias('currentUserInfo.lastVisit'),
 
+	  	canEdit: function () {
+	  		if (this.get('isCreator')) return "Click to Edit"
+	  	}.property(),
 
 		isCreator: function () {
 			return this.get('currentUserEmail') === this.get('submittedByEmail') || this.get('currentUserEmail') === 'brendanbrown27@gmail.com';
@@ -322,17 +326,68 @@
 				var playObject = {link: link, linkType: type, title: obj.get('title'), artist: obj.get('artist')};
 				this.sendAction('loadPlayer', playObject);
 				this.set('isNew', false);
+				//this.sendAction('addToNotNewList', this.get('identity'));
+			},
+
+			searchTag: function (name) {
+				this.sendAction('searchTag', name);
 			},
 
 			submittingComment: function (param) {
 				this.sendAction('submittingComment', param, this.get('identity'));
+				this.send('showCommentForm');
+			},
+
+			submittingTag: function (param) {
+				this.sendAction('submittingTag', param, this.get('identity'));
 			},
 
 			showCommentForm: function () {
 				this.set('isShowingCommentForm', !this.get('isShowingCommentForm'));
+			},
+
+			showTagForm: function () {
+				this.set('isShowingTagForm', !this.get('isShowingTagForm'));
 			}
 	  	
 	  	}
+	});
+
+	App.TagButtonComponent = Ember.Component.extend({
+		classNames: ['tag-component'],
+		tagText: '',
+
+		collectTags: function () {
+			this.set('tagsCollections', App.__container__.lookup("controller:auth").get('tagsCollections'));
+		}.on('init'),
+
+		suggestText: function () {
+			if (!this.get('tagText')) return this.set('suggestedText', '');
+			var suggestion = '';
+			
+			this.get('tagsCollections').forEach(function(tag){
+				if (tag.indexOf(this.get('tagText')) === 0 && !suggestion) {
+					suggestion = tag;
+					this.set('suggestedText', suggestion);
+				}
+			}.bind(this));
+
+			if (!suggestion) this.set('suggestedText', '');
+
+		}.observes('tagText'),
+
+		actions: {
+
+			setSuggestion: function () {
+				if (this.get('suggestedText'))
+					this.set('tagText', this.get('suggestedText'));
+			},
+	    	
+	    	submitTag: function() {
+	    		this.sendAction('submittingTag', this.get('tagText'));
+	    		this.set('tagText', '');
+	    	}
+		}
 	});
 
 
