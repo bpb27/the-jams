@@ -323,7 +323,7 @@
 			},
 
 			loadPlayer: function(obj, link, type){
-				var playObject = {link: link, linkType: type, title: obj.get('title'), artist: obj.get('artist')};
+				var playObject = {link: link, linkType: type, title: obj.get('title'), artist: obj.get('artist'), identity: this.get('identity')};
 				this.sendAction('loadPlayer', playObject);
 				this.set('isNew', false);
 				//this.sendAction('addToNotNewList', this.get('identity'));

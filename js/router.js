@@ -506,6 +506,16 @@
 
 			loadPlayer: function(playObject){
 				
+				if (playObject.identity) {
+					this.store.find('music', playObject.identity).then(function(song){
+						var total = song.get('totalPlays');
+						if (!total) total = 1
+						else total = total + 1;
+						song.set('totalPlays', total);
+						song.save();
+					})
+				}
+
 				if (playObject.linkType == 'video') {
 					this.set('showingModal', true);
 					this.set('showingVideo', true);

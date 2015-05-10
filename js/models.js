@@ -41,7 +41,8 @@
 		submittedByID: DS.attr('string'),
 		createdAt: DS.attr('date'),
   		comments: DS.hasMany('comment', { async: true }),
-  		tags: DS.hasMany('tag', { async: true })
+  		tags: DS.hasMany('tag', { async: true }),
+  		totalPlays: DS.attr('number')
 	});
 
 	App.Podcast = DS.Model.extend({
