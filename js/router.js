@@ -2,7 +2,7 @@
 	
 	'use strict';
 	
-	//CONNECTION TO FIREBASE ----------------------------------------
+	//CONNECTION TO FIREBASE --------------------------------------------
 	App.ApplicationAdapter = DS.FirebaseAdapter.extend({
 		firebase: new Firebase('https://thejams.firebaseio.com')
 	});
