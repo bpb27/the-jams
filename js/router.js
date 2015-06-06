@@ -11,7 +11,10 @@
 	//ROUTER ------------------------------------------------------------
 	App.Router.map(function(){
 		this.resource('listen');
+		this.resource('movie');
+		this.resource('film', {path: '/movies/:movie_id'});
 		this.resource('music');
+		this.resource('netflix');
 		this.resource('podcast');
 		this.resource('tune', {path: '/tune/:tune_id'});
 		this.resource('update');
@@ -25,6 +28,12 @@
 		controllerName: 'auth'
 	});
 
+	App.FilmRoute = Ember.Route.extend({
+		model: function (param) {
+			return this.store.find('movie', param.movie_id);
+		}
+	});
+
 	App.IndexRoute = Ember.Route.extend({
 		controllerName: 'auth'
 	});
@@ -35,9 +44,21 @@
 		}
 	});
 
+	App.MovieRoute = Ember.Route.extend({
+		model: function () {
+			return this.store.findAll('movie');
+		}
+	});
+
 	App.MusicRoute = Ember.Route.extend({
 		model: function () {
 			return this.store.findAll('music');
+		}
+	});
+
+	App.NetflixRoute = Ember.Route.extend({
+		model: function () {
+			return this.store.findAll('movie');
 		}
 	});
 
@@ -61,7 +82,6 @@
 
 	App.UserRoute = Ember.Route.extend({
 		model: function (param) {
-			console.log(param);
 			return this.store.find('user', param.user_id);
 		}
 	});
@@ -201,6 +221,48 @@
 	});
 
 
+	App.FilmController = Ember.ObjectController.extend({
+		formFields: function () {
+			var fields = this.get('model').get('_data');
+			var ne = ['Response', 'createdAt', 'reviews', 'id'];
+			var arr = [];
+
+			for (var prop in fields) {
+				if (ne.indexOf(prop) == -1) 
+					if (prop == 'Plot' || prop == 'tomatoConsensus')
+						arr.pushObject({name: prop, text: fields[prop], textarea: true});
+					else
+						arr.pushObject({name: prop, text: fields[prop]});
+			}
+
+			return arr;
+		}.property('willInsertElement'),
+
+		actions: {
+			
+			formData: function (data) {
+				var model = this.get('model');
+				for (var prop in data) {
+					this.set(prop, data[prop]);
+				}
+				model.save().then(function(){
+					this.transitionToRoute('movie');
+				}.bind(this));
+			},
+			
+			closeForm: function () {
+				this.transitionToRoute('movie');
+			},
+			
+			deleteMovie: function () {
+				this.get('model').destroyRecord().then(function(){
+					this.transitionToRoute('movie');
+				}.bind(this));
+			}
+		}
+	});
+
+
 
 	App.ListenController = Ember.ArrayController.extend({
 		needs: ['auth'],
@@ -216,18 +278,13 @@
 			{name: 'type', select: true, options: ['Album', 'Playlist', 'Song Set'], selected: 'Album', dividerStart: true, header: 'Fill this out...'},
 			{name: 'name'},
 			{name: 'artist'},
-			{name: 'review', display: 'Thoughts?'},
+			{name: 'review', display: 'Thoughts?', textarea: true},
 			{name: 'spotifyLinkOne', display: 'Spotify URI', dividerEnd: true},
 			{name: 'spotifyLinkTwo', display: '2nd Spotify URI', dividerStart: true, header: 'For Song Set Only'},
 			{name: 'spotifyLinkThree', display: '3rd Spotify URI'},
 			{name: 'spotifyLinkFour', display: '4th Spotify URI'},
 			{name: 'spotifyLinkFive', display: '5th Spotify URI', dividerEnd: true}
 		],
-		
-		showFiveFields: function () {
-			if (this.get('selectedType') === 'Song Set') return true;
-			return false;
-		}.property('selectedType'),
 
 	  	albums: function () {
 	  		return this.returnModel('Album');
@@ -294,6 +351,7 @@
 				var newComment = {
 					comment: text,
 					postedBy: this.get('currentUser.name'),
+					submittedByID: this.get('currentUser.identity'),
 					createdAt: new Date()
 				};
 
@@ -333,6 +391,202 @@
 	
 	});
 
+
+	App.MovieController = Ember.ArrayController.extend({
+		needs: ['auth'],
+		currentUser: Ember.computed.alias('controllers.auth.currentUser'),
+		query: '',
+		results: 0,
+		resultsLimit: 35,
+		sortAscending: false,
+		sortProperties: ['createdAt'],
+		year: '',
+
+		activatePopovers: function () {
+			Em.run.later(function(){
+				$("[data-toggle='popover']").popover();
+			}, 2000);
+		}.on('init'),
+
+		filteredContent: function () {
+			var filter = new String(this.get('query')).toString();
+		    var rx = new RegExp(filter, 'gi');
+		    var movies = this.get('arrangedContent').filter(function(movie) {
+
+		      	if (!movie.get('Title') || movie.get('Type') !== 'movie') return;
+		      	if (this.get('sortProperties')[0] === 'tomatoMeterNumeric' && movie.get('tomatoMeter') === 'N/A') return;
+
+		      	if (this.get('year')) {
+		      		var filterYear = new String(this.get('year')).toString();
+		    		var rxY = new RegExp(filterYear, 'gi');
+		    		if (!movie.get('Year').match(rxY)) return;
+		      	}
+		      	return movie.get('Title').match(rx) || movie.get('Year').match(rx) || movie.get('Director').match(rx) || movie.get('Genre').match(rx) || movie.get('Actors').match(rx);
+		    
+		    }.bind(this));
+
+		    this.set('results', movies.length);
+		    this.activatePopovers();
+		    return movies.slice(0, this.get('resultsLimit'));
+	  	
+	  	}.property('arrangedContent', 'query', 'year', 'sortAscending', 'length', 'resultsLimit'),
+
+	  	actions: {
+	  		
+	  		addRating: function (id, title) {
+	  			
+	  			var selector = '#' + id + '-movie-review'; //empty movie review div
+	  			var elementAlreadyPresent = $(selector + ' .submit-rating'); // if you double click a rate button, it should appear, then disappear
+	  			var info = {text: '', rating: '0', selector: selector, movie: null, review: null}
+
+	  			this.store.find('movie', id).then(function(movie){
+		  			movie.get('reviews').then(function(reviews){
+		  				var existingReview = reviews.findBy('submittedByID', this.get('currentUser.identity'));
+	  					if (existingReview) {
+	  						info.text = existingReview.get('review') || '';
+	  						info.rating = existingReview.get('rating').toString();
+	  						info.review = existingReview;	
+	  					}
+	  					
+	  					info.movie = movie;
+	  					info.id = id;
+	  					$('.movie-review-box').html('');
+	  					if (!elementAlreadyPresent.length) this.appendingRatingForm(info);	
+
+		  			}.bind(this));
+		  		}.bind(this));
+	  			
+	  		},
+
+	  		checkMovie: function () {	
+	  			if (this.get('filteredContent').findBy('title', this.get('query')) || !this.get('query').length) return;
+	  			
+	  			var link = this.get('year') ? "http://www.omdbapi.com/?t=" + this.get('query') + "&y=" + this.get('year') + "&plot=short&tomatoes=true&r=json" : "http://www.omdbapi.com/?t=" + this.get('query') + "&y=&plot=short&tomatoes=true&r=json";
+
+	  			$.get(link).then(function(result){
+			    	result['createdAt'] = new Date();
+
+			    	var movieEntry = this.store.createRecord('movie', result);
+					movieEntry.save().then(function(data){
+						console.log("Success!", data);
+					}.bind(this))
+
+			  	}.bind(this), function (error) {
+			  		console.log(error);
+			  	}.bind(this));
+
+	  		},
+
+	  		editMovie: function (param) {
+	  			this.transitionToRoute('film', param);
+	  		},
+
+	  		loadMore: function () {
+	  			this.set('resultsLimit', this.get('resultsLimit') + 10);
+	  		},
+
+	  		sortBy: function (field) {
+	  			this.set('sortProperties', [field]);
+	  			this.set('sortAscending', !this.get('sortAscending'));
+	  		}
+	  	},
+
+	  	appendingRatingForm: function (info) {
+	  		var that = this;
+	  		$(info.selector).append('<textarea placeholder="Review (Optional)">' + info.text + '</textarea><input type="number" value="' + info.rating + '" placeholder="Out of 5"/><button class="submit-rating">Done</button>');
+  			$(info.selector + ' .submit-rating').click(function(){
+  				var review = $(info.selector + ' textarea').val();
+  				var rating = $(info.selector + ' input').val();
+  				var obj = {review: review, rating: parseInt(rating), title: info.movie.get('Title'), createdAt: new Date()};
+  				that.submitReview(obj, info);
+  			});
+	  	},
+
+	  	submitReview: function (newReview, info) {
+	  		if (info.review) {
+	  			info.review.set('review', newReview.review);
+	  			info.review.set('rating', parseInt(newReview.rating));
+	  			info.review.save();
+	  		} 
+	  		else {
+	  			newReview['submittedBy'] = this.get('currentUser.name');
+				newReview['submittedByEmail'] = this.get('currentUser.email');
+				newReview['submittedByID'] = this.get('currentUser.identity');
+
+		  		var rev = this.store.createRecord('review', newReview);
+
+		  		info.movie.get('reviews').then(function(reviews){
+	  				reviews.pushObject(rev);
+	  				info.movie.save();
+	  			});
+
+		  		rev.save();
+	  		}
+
+	  		this.send('addRating', info.id);
+	  	}
+	});
+
+	App.NetflixController = Ember.ArrayController.extend({
+		needs: ['auth'],
+		currentUser: Ember.computed.alias('controllers.auth.currentUser'),
+		netflixData: '',
+		uploadComplete: false,
+
+		transformToArray: function (data) {
+			var arr = [];
+			var name = this.get('currentUser.name');
+			var email = this.get('currentUser.email');
+			var identity = this.get('currentUser.identity');
+			
+			for (var prop in data) {
+				var obj = {
+					title: prop,
+					rating: data[prop],
+					submittedByID: identity,
+					submittedByEmail: email,
+					submittedBy: name,
+					createdAt: new Date()
+				}
+				arr.pushObject(obj);
+			}
+			return arr;
+		},
+
+		actions: {
+			submitRatings: function () {
+				var data;
+
+				try {
+					data = JSON.parse(this.get('netflixData'));
+				} catch (error) {
+					return alert("Didn't quite work...\n" + error.name + " : " + error.message);
+				}
+
+				if (!data) return alert("There doesn't seem to be any data...");
+
+				var list = this.transformToArray(data);
+				list.forEach(function(entry){
+					var movie = this.get('model').findBy('Title', entry.title);
+					if (movie) {
+						var newReview = this.store.createRecord('review', entry);
+						movie.get('reviews').then(function(reviews){
+							reviews.pushObject(newReview);
+						});
+						movie.save()
+						newReview.save();
+					}
+					else {
+						console.log(entry);
+					}
+				}.bind(this));
+
+				this.set('netflixData', '');
+				this.set('uploadComplete', true);
+			}
+		}
+	});
+
 	
 	App.MusicController = Ember.ArrayController.extend({
 		needs: ['auth'],
@@ -344,23 +598,31 @@
 		showModal: false,
 		sortAscending: false,
 		sortProperties: ['createdAt'],
-		musicType: ['Song', 'Music Video', 'Live Performance'],
-		selectedMusicType: 'Song',
 		query: '',
 		
 		formFields: [
-			{name: 'type', select: true, options: ['Song', 'Music Video', 'Live Performance'], selected: 'Song', header: 'Fill this out...', dividerStart: true},
+			{name: 'type', select: true, options: ['Song', 'Music Video', 'Live Performance'], selected: 'Song', header: 'Enter one or more links...', dividerStart: true},
+			{name: 'comment', display: 'Review', textarea: true, placeholder: 'What\'s good...'},
 			{name: 'spotifyLink', display: 'Spotify URI', placeholder: 'e.g. spotify:track:4SenxwCmSCIXfklUvmXyNc', videoHelp: '/media/spotify-click-uri.mp4', spotify: true},
 			{name: 'youTubeLink', display: 'YouTube Link', placeholder: 'e.g. https://www.youtube.com/watch?v=mKVARXSHZD8', videoHelp: '/media/youtube-click-uri.mp4'},
-			{name: 'comment', display: 'Review', textarea: true, placeholder: 'What\'s good...', dividerEnd: true},
-			{name: 'title', header: 'And this..', dividerStart: true},
+			{name: 'soundCloudLink', display: 'SoundCloud Embed Link', placeholder: 'e.g. https://soundcloud.com/titus...', videoHelp: '/media/soundcloud-click-uri.mp4', dividerEnd: true},
+			{name: 'title', header: 'Add info:', dividerStart: true},
 			{name: 'artist'},
 			{name: 'album'},
 			{name: 'year', dividerEnd: true},
-			{name: 'soundCloudLink', header: 'Optional', display: 'SoundCloud Embed Link', placeholder: 'e.g. https://soundcloud.com/titus...', videoHelp: '/media/soundcloud-click-uri.mp4', videoOrientation: 'left', dividerStart: true},
-			{name: 'external_source', placeholder: 'Pitchfork, A.V. Club, Rolling Stone...'},
-			{name: 'external_score', placeholder: 'Rating...', dividerEnd: true}
+			
 		],
+
+		newestDate: function (song) {
+			var date = new Date('1/1/2000');
+			song.get('comments').forEach(function(comment){
+				if (comment.get('createdAt') > date) date = comment.get('createdAt');
+			});
+			
+			if (date.getFullYear() === 2000) return song.get('createdAt');
+			else return date;
+
+		},
 
 	  	filteredContent: function (){
   			var filter = this.get('query');
@@ -369,14 +631,17 @@
 
 		    var tunes = music.filter(function(song) {
 		      	
+		      	if (this.get('currentUser.follows'))
+		      		if (this.get('currentUser.follows').indexOf(song.get('submittedByID')) == -1) return;
+
 		      	if (this.get('showOnlyVideos'))
 		      		if (song.get('type') === 'Song') return;
 
 		      	if (this.get('favorites'))
 		      		if (this.get('currentUser.favorites').indexOf(song.get('id')) == -1) return;
 
-		      	if (this.get('currentUser.follows'))
-		      		if (this.get('currentUser.follows').indexOf(song.get('submittedByID')) == -1) return;
+		      	if (this.get('showRecent'))
+		      		song.set('newestDate', this.newestDate(song));
 
 		      	if (song.get('tags')) {
 		      		var tags = [];
@@ -385,10 +650,12 @@
 		      		})
 		      	}
 		      		
-
 		      	return song.get('title').match(rx) || song.get('artist').match(rx) || song.get('album').match(rx) || song.get('submittedBy').match(rx) || song.get('year').toString().match(rx) || song.get('type').toString().match(rx) || tags.join().match(rx);
 		    
 		    }.bind(this));
+
+		    if (this.get('showRecent')) tunes = tunes.sortBy('newestDate').reverse()
+		    tunes = tunes.slice(0, this.get('songLimit'));
 
 		    tunes = tunes.map(function(tune){
 		    	tune.set('dividerStart', false);
@@ -396,9 +663,10 @@
 		    	return tune;
 		    });
 
-		    tunes = tunes.slice(0, this.get('songLimit'));
-
 		    this.gatherPlayAllLinks(tunes);
+
+		    if ($(window).width() <= 990)
+				return divide(tunes);
 
 		    var tunes_one = [];
 		    var tunes_two = [];
@@ -420,21 +688,12 @@
 
 			return divide(tunes_one).concat(divide(tunes_two)).concat(divide(tunes_three));
 
-	  	}.property('arrangedContent', 'query', 'sortAscending', 'length', 'showOnlyVideos', 'currentUser.favorites', 'currentUser.follows', 'favorites', 'songLimit'),
+	  	}.property('arrangedContent', 'query', 'sortAscending', 'length', 'showOnlyVideos', 'currentUser.favorites', 'currentUser.follows', 'favorites', 'songLimit', 'showRecent'),
 		
 		actions: {
 			closeForm: function () {
 				this.set('showingForm', false);
 				this.set('showingModal', false);
-			},
-
-			closePlayer: function () {
-				$('.player-container').html('');
-				this.set('playingTracks', false);
-				this.set('playingAll', false);
-				this.set('playingAllSpotify', false);
-				this.set('showingModal', false);
-				this.set('showingVideo', false);
 			},
 
 			editWhole: function (id) {
@@ -480,7 +739,6 @@
 					var musicEntry = this.store.createRecord('music', data);
 					
 					musicEntry.save().then(function(){
-						this.clearForm();
 						this.send('closeForm');
 						console.log("New music added!", musicEntry);
 					}.bind(this))
@@ -533,91 +791,13 @@
 			},
 
 			playAll: function () {
-
 				
 				var playObject = {};
-				//playObject['embedLink'] = '<iframe src="https://embed.spotify.com/?uri="' + this.get('playAllSpotifyLinks') + '" width="100%" height="" frameborder="0" allowtransparency="true"></iframe>';
 				playObject['embedLink'] = this.get('playAllLinks');
 				playObject['type_of_play'] = 'all_youtube';
 				this.get('controllers.auth').send('playRequest', playObject);
 
 				return;
-
-				var all_links = this.get('playAllLinks');
-				var current_number = this.get('currentTrackNumber');
-
-				if (all_links.length === 0) return;
-				if (current_number >= all_links.length - 1) {
-					this.set('currentTrackNumber', 0);
-					current_number = 0;
-				}
-
-				function onPlayerStateChange (event) {
-				    if (event.data === YT.PlayerState.ENDED)
-				    	$('.play-next-btn').click();
-				    if (event.data === YT.PlayerState.PLAYING) {}
-				   	if (event.data === YT.PlayerState.PAUSED) {}
-    			}
-
-    			var vidId = all_links[current_number]['youTubeLink'];
-    			this.set('currentPlay', all_links[current_number]);
-
-    			$('.player-container').html('<iframe id="player_'+vidId+'" width="100%" height="32" src="//www.youtube.com/embed/' + vidId + '?enablejsapi=1&autoplay=1&autohide=0" frameborder="0" allowfullscreen></iframe>');
-            
-		        new YT.Player('player_'+vidId, {
-		            events: {
-		                'onStateChange': onPlayerStateChange
-		            }
-		        });
-
-
-				// this.send('closePlayer');
-				// this.set('playingTracks', true);
-				// this.set('playingAll', true);
-
-				// var all_links = this.get('playAllLinks');
-				// var current_number = this.get('currentTrackNumber');
-
-				// if (all_links.length === 0) return;
-				// if (current_number >= all_links.length - 1) {
-				// 	this.set('currentTrackNumber', 0);
-				// 	current_number = 0;
-				// }
-
-				// function onPlayerStateChange (event) {
-				//     if (event.data === YT.PlayerState.ENDED)
-				//     	$('.play-next-btn').click();
-				//     if (event.data === YT.PlayerState.PLAYING) {}
-				//    	if (event.data === YT.PlayerState.PAUSED) {}
-    // 			}
-
-    // 			var vidId = all_links[current_number]['youTubeLink'];
-    // 			this.set('currentPlay', all_links[current_number]);
-
-    // 			$('.player-container').html('<iframe id="player_'+vidId+'" width="100%" height="32" src="//www.youtube.com/embed/' + vidId + '?enablejsapi=1&autoplay=1&autohide=0" frameborder="0" allowfullscreen></iframe>');
-            
-		  //       new YT.Player('player_'+vidId, {
-		  //           events: {
-		  //               'onStateChange': onPlayerStateChange
-		  //           }
-		  //       });
-
-			},
-
-			// playAllSpotify: function () {
-			// 	this.send('closePlayer');
-			// 	this.set('playingAllSpotify', true);
-			// },
-
-			playNext: function () {
-				this.set('currentTrackNumber', (this.get('currentTrackNumber') + 1));
-				this.send('playAll');
-			},
-
-			playPrevious: function () {
-				if (this.get('currentTrackNumber') > 0)
-					this.set('currentTrackNumber', (this.get('currentTrackNumber') - 1));
-				this.send('playAll');
 			},
 
 			searchTag: function (tag) {
@@ -637,7 +817,9 @@
 
 			sortBy: function(property) {
 			    this.set('sortProperties', [property]);
-			    this.set('sortAscending', !this.get('sortAscending'));
+
+			    if (property === 'newestDate') this.set('sortAscending', true); 
+			    else this.set('sortAscending', !this.get('sortAscending'));
     		},
 
     		submittingComment: function (text, entryId) {
@@ -647,6 +829,7 @@
 				var newComment = {
 					comment: text,
 					postedBy: this.get('currentUser.name'),
+					submittedByID: this.get('currentUser.identity'),
 					createdAt: new Date()
 				};
 
@@ -693,20 +876,17 @@
 				
 			},
 
-			toggleShowFavorites: function () {
-				this.set('favorites', !this.get('favorites'));
-				this.set('query', '');
-			},
-
 			showForm: function () {
 				if (!this.get('isLoggedIn')) return this.authMessage();
 				this.set('showingModal', true);
 				this.set('showingForm', true);
 			},
 
-			toggleShowOnlyVideos: function(){
-				this.set('showOnlyVideos', !this.get('showOnlyVideos'));
-				this.set('query', '');
+			toggleSortOptions: function (field) {
+				if (field === 'showRecent' && this.get('showRecent')) return this.removeSort();;
+				this.removeSort(field);
+				this.set(field, !this.get(field));
+				if (field === 'showRecent') this.send('sortBy', 'newestDate');
 			},
 
 			updatingEntry: function (update) {
@@ -743,7 +923,16 @@
 		    this.set('playAllSpotifyLinks', playAllSpotifyLinks);
 		    this.set('playAllLinks', playAllLinks);
 		    this.set('currentTrackNumber', 0);
-		}
+		},
+
+		removeSort: function (field) {
+			if (field !== 'favorites') this.set('favorites', false);
+			if (field !== 'showOnlyVideos') this.set('showOnlyVideos', false);
+			if (field !== 'showRecent') this.set('showRecent', false);
+			this.set('query', '');
+			this.set('sortAscending', false);
+			this.set('sortProperties', ['createdAt']);
+		},
 
 	});	
 
@@ -974,6 +1163,15 @@
 	Ember.Handlebars.registerBoundHelper('format-shortdate', function(date) {
   		return moment(date).format('l');
 	});
+
+	var idMap = 
+		{
+			'Brendan Brown': '-J_42K3Bz5xrAY36aZg_',
+			'Nick Ziemann': '-J_9pRMEbEA4aVAdAcGV',
+			'Alex J': '-Jidnu-_pIoo2PfAwHaq',
+			'Morgan Brown': '-Jjb8iBzQ5VMY8lZjs2E',
+			'Matthew Brown': '-Jjb8iBzQ5VMY8lZjs2E'
+		}	
 
 	
 

@@ -54,29 +54,6 @@
 			this.set('playingAllSpotify', true);
 		},
 
-		// setPlayAllYoutubeAudio: function (data) {
-		// 	var currentSong = data.all_songs_array[this.get('currentTrackNumber')] || data.all_songs_array[0];
-		// 	if (!currentSong) return;
-
-		// 	var vidId = currentSong['youTubeLink'];
-		// 	//var player = new YT.Player('player_'+vidId, { events: {'onStateChange': onPlayerStateChange } });
-			
-		// 	//this.set('player', player);
-		// 	this.set('title', currentSong.title);
-		// 	this.set('artist', currentSong.artist);
-  //       	this.set('showButtons', true);
-
-  //       	$('.player-container').html('<iframe width="100%" height="32" src="//www.youtube.com/embed/'+vidId+'?playlist=4gLchnoNOAo,YsUjo3P8FG8&autoplay=1&autohide=0" frameborder="0" allowfullscreen></iframe>');
-  //  //      	$('.player-container').html('<iframe id="player_'+vidId+'" width="100%" height="32" src="//www.youtube.com/embed/'+vidId+'?enablejsapi=1&autoplay=1&autohide=0" frameborder="0" allowfullscreen></iframe>');
-
-  //  //      	function onPlayerStateChange (event) {
-		// 	//     if (event.data === YT.PlayerState.ENDED) $('.play-next-btn').click();
-		// 	//     if (event.data === YT.PlayerState.PLAYING) {}
-		// 	//    	if (event.data === YT.PlayerState.PAUSED) {}
-		// 	// }
-	        
-		// },
-
 		substituteWidthAndHeight: function (line) {
 			var link = line.split(' ');
 			for (var i = 0; i < link.length; i++) {
@@ -204,7 +181,6 @@
 					if (obj.spotifyLink.indexOf('track') == -1)
 						obj['spotifyLink'] = 'spotify:track:' + obj['spotifyLink'];
 
-				console.log(obj);
 				this.sendAction('formData', obj);
 			},
 			
@@ -242,6 +218,7 @@
 	  	textElements: ['title', 'artist', 'album', 'year', 'review'],
 	  	currentUserEmail: Em.computed.alias('currentUserInfo.email'),
 	  	currentUserFavs: Em.computed.alias('currentUserInfo.favorites'),
+	  	currentUserId: Em.computed.alias('currentUserInfo.identity'),
 	  	lastVisit: Em.computed.alias('currentUserInfo.lastVisit'),
 
 	  	canEdit: function () {
@@ -260,21 +237,20 @@
 			return (this.get('createdAt') > this.get('lastVisit')) && !this.get('isCreator');
 		}.property('lastVisit'),
 			
-		needsVideo: function(){
+		needsVideo: function () {
 			return (this.get('type') === "Live Performance" || this.get('type') === "Music Video");
 		}.property(),
 
-	  	applyDimensions: function (element, input) {
-	  		input.css('height', (parseInt(element.css('height').replace('px', '')) * 2).toString() + 'px');
-	  		input.css('fontSize', element.css('fontSize'));
-	  	},
+		newestDate: function () {
+			var date = new Date('1/1/2000');
+			this.get('comments').forEach(function(comment){
+				if (comment.get('createdAt') > date) date = comment.get('createdAt');
+			});
+			
+			if (date.getFullYear() === 2000) return this.get('createdAt');
+			else return date;
 
-	  	restoreTextElements: function () {
-	  		this.$('.music-item .edit-container').remove();
-	  		this.get('textElements').forEach(function(param){
-				this.$('.music-item .' + param).show();
-	  		}.bind(this));
-	  	},
+		}.property('comments.length'),
 	  		
 	  	actions: {
 	  		
@@ -313,6 +289,31 @@
 
 	  		},
 
+	  		editComment: function (comment) {
+	  			if (comment.get('submittedByID') === this.get('currentUserId')) {
+	  				var element = this.$('.comment-list .' + comment.get('id'));
+	  				element.hide();
+	  				element.after("<div class='edit-container'><textarea class='edit-input' rows='5'>"+comment.get('comment')+"</textarea><div class='confirm edit-btn'>&#10003;</div><div class='discard edit-btn'>X</div></div>");
+	  			
+	  				this.$('.music-item .confirm').click(function(){
+						
+						var newText = this.$('.comment-list .edit-input').val();
+						comment.set('comment', newText);
+						comment.save();
+
+						this.$('.music-item .edit-container').remove();
+						
+						element.show();
+				
+					}.bind(this));
+
+					this.$('.music-item .discard').click(function(){
+						this.$('.music-item .edit-container').remove();
+						element.show();
+					}.bind(this));
+	  			}
+	  		},
+
 			favorite: function () {
 				this.sendAction('favorite', this.get('identity'));
 			},
@@ -349,8 +350,20 @@
 			showTagForm: function () {
 				this.set('isShowingTagForm', !this.get('isShowingTagForm'));
 			}
-	  	
+	  	},
+
+	  	applyDimensions: function (element, input) {
+	  		input.css('height', (parseInt(element.css('height').replace('px', '')) * 2).toString() + 'px');
+	  		input.css('fontSize', element.css('fontSize'));
+	  	},
+
+	  	restoreTextElements: function () {
+	  		this.$('.music-item .edit-container').remove();
+	  		this.get('textElements').forEach(function(param){
+				this.$('.music-item .' + param).show();
+	  		}.bind(this));
 	  	}
+
 	});
 
 	App.TagButtonComponent = Ember.Component.extend({
@@ -366,13 +379,17 @@
 			var suggestion = '';
 			
 			this.get('tagsCollections').forEach(function(tag){
-				if (tag.indexOf(this.get('tagText')) === 0 && !suggestion) {
-					suggestion = tag;
+				if (tag.indexOf(this.get('tagText').toLowerCase()) === 0 && !suggestion) {
+					suggestion = tag;			
 					this.set('suggestedText', suggestion);
 				}
+				
 			}.bind(this));
 
 			if (!suggestion) this.set('suggestedText', '');
+
+			if (this.get('tagText') === 'ra' || this.get('tagText') === 'rap')
+				this.set('suggestedText', 'hip-hop');
 
 		}.observes('tagText'),
 

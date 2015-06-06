@@ -7,7 +7,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" type="text/css" href="public/styling.css">
 		<link href='//fonts.googleapis.com/css?family=Raleway:100,200,300,400,600,800' rel='stylesheet' type='text/css'>
-		<link href='//fonts.googleapis.com/css?family=Crimson+Text:400,600' rel='stylesheet' type='text/css'>
 		<link href="media/jams.png" rel="icon" type="image/x-icon" />
 	</head>
 
@@ -38,6 +37,7 @@
 	            			<li>{{#link-to 'music'}}Songs{{/link-to}}</li>
 	            			<li>{{#link-to 'listen'}}Listens{{/link-to}}</li>
 	            			<li>{{#link-to 'podcast'}}Podcasts{{/link-to}}</li>
+	            			<li>{{#link-to 'movie'}}Movies{{/link-to}}</li>
 	            			<li>{{#link-to 'update'}}Updates{{/link-to}}</li>
 	            			<li>{{#link-to 'users'}}Users{{/link-to}}</li>
 	            			<li>{{#link-to 'user' currentUser.identity}}{{currentUser.firstName}}{{/link-to}}</li>
@@ -50,9 +50,9 @@
   				</div>
       		</div>
   		</script>
+  		
 
-  		
-  		
+
   		<!-- COMPONENTS ********************************************************************************* -->
 
 
@@ -74,77 +74,61 @@
 		</script>
 
 
-
-
-  		<script type="text/x-handlebars" data-template-name="components/music-entry">
-  			<div {{bind-attr class=":music-item isNew:isNew"}}>
-  				
-  				<div class="all-text-container">
-	  				
-  					{{#if isFavorite}}
-	  					<div class="music-favorite isFavorite" {{action 'favorite'}}>&#10084;</div>
-	  				{{else}}
-	  					<div class="music-favorite" {{action 'favorite'}}>&#10084;</div>
-	  				{{/if}}
-	  				
-	  				<div class="text-wrapper thin">
-						<h5 class="top-bar">
-							<span class="upper" {{bind-attr title=canEdit}} {{action 'editWhole'}}><b>NEW {{type}}</b> FROM <b>{{submittedBy}}</b></span>
-						</h5>
-		  				<div class="title" {{action 'edit' 'title' on='doubleClick'}}>{{title}}</div>
-		  				<div class="artist" {{action 'edit' 'artist' on='doubleClick'}}><span {{action 'searchTag' artist}}> {{artist}}</span></div>
-		  				<div class="album" {{action 'edit' 'album' on='doubleClick'}}>{{album}}</div>
-		  				<div class="year" {{action 'edit' 'year' on='doubleClick'}}>({{year}})</div>
-		  			</div>
-	  				
-	  				<div class="review-wrapper">
-						<div class="review" {{action 'edit' 'review' on='doubleClick'}}>{{comment}}</div>
-						<div class="comment-list">
-			  				{{#each comments}}
-			  					<p><b>{{postedBy}}</b> {{comment}}</p><br>
-			  				{{/each}}
-	  					</div>
-	  					<div class="tag-list">
-			  				{{#each tags}}
-			  					<button class="btn btn-primary tag-btn" {{action 'searchTag' name}}>{{name}}</button>
-			  				{{/each}}
-
-			  				{{#if tags.length}}
-			  					<button class="btn tag-btn-plus" {{action 'showTagForm'}}>+</button>
-			  				{{else}}
-			  					<button class="btn tag-btn-plus tag-btn-text" {{action 'showTagForm'}}>Add tags +</button>
-			  				{{/if}}
-
-			  				<div {{bind-attr class=":submit-tag-wrapper isShowingTagForm:isShowingTagForm:hide"}}>
-	  							{{tag-button submittingTag=submittingTag ctrlName='music'}}
-	  						</div>
-			  				
-			  			</div>
-	  				</div>
-
-	  			</div>
-
-
-  				<div class="btn-container">
-					{{#if needsVideo}}<button class="button-ish-two video-btn" {{action "loadPlayer" this youTubeLink 'video'}}>Video</button>{{/if}}
-	  				{{#if youTubeLink}}<button class="button-ish-two youtube-btn" {{action "loadPlayer" this youTubeLink 'youtube'}}>Youtube</button>{{/if}}
-	  				{{#if spotifyLink}}<button class="button-ish-two spotify-btn" {{action "loadPlayer" this spotifyLink 'spotify'}}>Spotify</button>{{/if}}
-	  				{{#if soundCloudLink}}<button class="button-ish-two soundcloud-btn" {{action "loadPlayer" this soundCloudLink 'soundcloud'}}>SoundCloud</button>{{/if}}
-	  				<button class="button-ish-two comment-btn" {{action 'showCommentForm'}}>Comment</button>
-	  				
-	  			</div>
-
-	  			<div {{bind-attr class=":submit-comment-wrapper isShowingCommentForm:isShowingCommentForm:hide"}}>
-	  				{{comment-button submittingComment=submittingComment}}
-	  			</div>
-
-  				<h5 class="bottom-bar">{{format-date createdAt}}</h5>		
-	  		
-	  		</div>
+		
+		<script type="text/x-handlebars" data-template-name="components/comment-button">
+			{{textarea value=commentText placeholder="Thoughts...?" class="form-control"}}
+			<button class="btn submit-comment-btn" {{action 'submitComment'}}>Submit</button>
   		</script>
 
 
-  		<script type="text/x-handlebars" data-template-name="components/listen-entry">
+
+  		<script type="text/x-handlebars" data-template-name="components/form-template">
+			<div {{bind-attr class=this.customClass}}>
+				<div class="container">
+					{{#if tip}}
+						<p><span style="text-decoration: underline">Eric Karros Says:</span> {{tip}}</p>
+					{{/if}}
+					<div class="form-fields">
+						{{#each field in fieldsFormatted}}
+							{{#if field.dividerStart}}<div class="col-md-6">{{/if}}
+							{{#if field.header}}<h3>{{field.header}}</h3>{{/if}}
+							<label>{{field.display}} {{#if field.optional}}({{field.optional}}){{/if}}</label>
+							{{#if field.videoHelp}}
+								<div class="form-video-help">
+									<a class={{unbound field.videoOrientation}}>?
+										<video autoplay loop muted width="576" height="432">
+											<source src={{unbound field.videoHelp}} type="video/mp4">
+										</video>
+									</a>
+								</div>
+							{{/if}}
+							{{#if field.textarea}}
+								<span {{bind-attr class=field.name}}>{{textarea placeholder=field.placeholder value=field.text height="50" spellcheck=false class="form-control"}}</span>
+							{{else}}
+								{{#if field.select}}
+									<span {{bind-attr class=field.name}}>{{view Ember.Select content=field.options value=field.selected class="form-control"}}</span>
+								{{else}}
+									{{#if field.spotify}}
+										<span {{bind-attr class=field.name}}>{{input type="text" placeholder=field.placeholder value=spotifyLink classNames="form-control"}}</span>
+									{{else}}
+										<span {{bind-attr class=field.name}}>{{input type="text" placeholder=field.placeholder value=field.text classNames="form-control"}}</span>
+									{{/if}}
+								{{/if}}
+							{{/if}}
+							{{#if field.dividerEnd}}</div>{{/if}}
+						{{/each}}
+					</div>
+					<div class="form-btn-block col-md-12">
+						<button class="btn btn-primary" {{action 'submit'}}>Submit</button>
+						<button class="btn btn-danger" {{action 'close'}}>Nevermind</button>
+					</div>
+				</div>
+			</div>
+  		</script>
+
+
+		
+		<script type="text/x-handlebars" data-template-name="components/listen-entry">
   			<div class="music-item">
   				<h5 class="top-bar thin"><span class="upper"><b>NEW {{type}}</b> FROM <b>{{submittedBy}}</b></span></h5>
   				<p class="listen-title">{{name}}</p>
@@ -152,7 +136,7 @@
   				<p class="review">{{review}}</p>
 	  			<div class="comment-list">
 	  				{{#each comments}}
-	  					<p><b>{{postedBy}}</b> {{comment}}</p><br>
+	  					<p {{action 'editComment' this on='doubleClick'}}><b>{{postedBy}}</b> {{comment}}</p><br>
 	  				{{/each}}
 	  			</div>
 	  			<div class="tag-list">
@@ -174,74 +158,80 @@
 	  			{{else}}
 	  				<button class="button-ish-two play-btn" {{action 'showPlayer'}}>Play</button>
 	  			{{/if}}
-	  			
 	  			<h5 class="bottom-bar">{{format-date createdAt}}</h5>
   			</div>
   		</script>
 
 
+  		
+  		<script type="text/x-handlebars" data-template-name="components/music-entry">
+  			<div {{bind-attr class=":music-item isNew:isNew"}}>
+  				<div class="all-text-container">
+  					{{#if isFavorite}}
+	  					<div class="music-favorite isFavorite" {{action 'favorite'}}>&#10084;</div>
+	  				{{else}}
+	  					<div class="music-favorite" {{action 'favorite'}}>&#10084;</div>
+	  				{{/if}}
+	  				<div class="text-wrapper thin">
+						<h5 class="top-bar">
+							<span class="upper" {{bind-attr title=canEdit}} {{action 'editWhole'}}><b>NEW {{type}}</b> FROM <b>{{submittedBy}}</b></span>
+						</h5>
+		  				<div class="title" {{action 'edit' 'title' on='doubleClick'}}>{{title}}</div>
+		  				<div class="artist" {{action 'edit' 'artist' on='doubleClick'}}><span {{action 'searchTag' artist}}> {{artist}}</span></div>
+		  				<div class="album" {{action 'edit' 'album' on='doubleClick'}}>{{album}}</div>
+		  				<div class="year" {{action 'edit' 'year' on='doubleClick'}}>({{year}})</div>
+		  			</div>		
+	  				<div class="review-wrapper">
+						<div class="review" {{action 'edit' 'review' on='doubleClick'}}>{{comment}}</div>
+						<div class="comment-list">
+			  				{{#each comments}}
+			  					<p {{bind-attr class=id}} {{action 'editComment' this on='doubleClick'}}>
+			  						<b>{{postedBy}}</b>&nbsp&nbsp{{comment}} <br><span class="comment-date"> - {{format-date createdAt}}</span><br>
+			  					</p>
+			  				{{/each}}
+	  					</div>
+	  					<div class="tag-list">
+			  				{{#each tags}}
+			  					<button class="btn tag-btn" {{action 'searchTag' name}}>{{name}}</button>
+			  				{{/each}}
 
-		<script type="text/x-handlebars" data-template-name="components/comment-button">
-			{{textarea value=commentText placeholder="Thoughts...?" class="form-control"}}
-			<button class="btn submit-comment-btn" {{action 'submitComment'}}>Submit</button>
+			  				{{#if tags.length}}
+			  					<button class="btn tag-btn-plus" {{action 'showTagForm'}}>+</button>
+			  				{{else}}
+			  					<button class="btn tag-btn-plus tag-btn-text" {{action 'showTagForm'}}>Add tags +</button>
+			  				{{/if}}
+
+			  				<div {{bind-attr class=":submit-tag-wrapper isShowingTagForm:isShowingTagForm:hide"}}>
+	  							{{tag-button submittingTag=submittingTag ctrlName='music'}}
+	  						</div>
+			  				
+			  			</div>
+	  				</div>
+	  			</div>
+  				<div class="btn-container">
+					{{#if needsVideo}}<button class="button-ish-two video-btn" {{action "loadPlayer" this youTubeLink 'video'}}>Video</button>{{/if}}
+	  				{{#if youTubeLink}}<button class="button-ish-two youtube-btn" {{action "loadPlayer" this youTubeLink 'youtube'}}>Youtube</button>{{/if}}
+	  				{{#if spotifyLink}}<button class="button-ish-two spotify-btn" {{action "loadPlayer" this spotifyLink 'spotify'}}>Spotify</button>{{/if}}
+	  				{{#if soundCloudLink}}<button class="button-ish-two soundcloud-btn" {{action "loadPlayer" this soundCloudLink 'soundcloud'}}>SoundCloud</button>{{/if}}
+	  				<button class="button-ish-two comment-btn" {{action 'showCommentForm'}}>Comment</button>
+	  				
+	  			</div>
+
+	  			<div {{bind-attr class=":submit-comment-wrapper isShowingCommentForm:isShowingCommentForm:hide"}}>
+	  				{{comment-button submittingComment=submittingComment}}
+	  			</div>
+  				<h5 class="bottom-bar">{{format-date createdAt}}</h5>		
+	  		</div>
   		</script>
 
+
+  		
   		<script type="text/x-handlebars" data-template-name="components/tag-button">
 			{{input value=tagText placeholder="Tag..." class="form-control"}}
 			<span {{action 'setSuggestion'}} class="tag-suggestion">{{input value=suggestedText placeholder="Suggestion..." class="form-control tag-suggestion" readonly=true}}</span>
 			<button class="btn submit-tag-btn confirm" {{action 'submitTag'}}>✓</button>
   		</script>
-
- 
-
   		
-  		<script type="text/x-handlebars" data-template-name="components/form-template">
-			<div {{bind-attr class=this.customClass}}>
-				
-				<div class="container">
-					
-					{{#if tip}}<p><span style="text-decoration: underline">Eric Karros Says:</span> {{tip}}</p>{{/if}}
-					
-					<div class="form-fields">
-						{{#each field in fieldsFormatted}}
-							{{#if field.dividerStart}}<div class="col-md-4">{{/if}}
-							{{#if field.header}}<h3>{{field.header}}</h3>{{/if}}
-							<label>{{field.display}} {{#if field.optional}}({{field.optional}}){{/if}}</label>
-							{{#if field.videoHelp}}
-								<div class="form-video-help">
-									<a class={{unbound field.videoOrientation}}>?
-										<video autoplay loop muted width="576" height="432">
-											<source src={{unbound field.videoHelp}} type="video/mp4">
-										</video>
-									</a>
-								</div>
-							{{/if}}
-							{{#if field.textarea}}
-								<span {{bind-attr class=field.name}}>{{textarea placeholder=field.placeholder spellcheck=false class="form-control"}}</span>
-							{{else}}
-								{{#if field.select}}
-									<span {{bind-attr class=field.name}}>{{view Ember.Select content=field.options value=field.selected class="form-control"}}</span>
-								{{else}}
-									{{#if field.spotify}}
-										<span {{bind-attr class=field.name}}>{{input type="text" placeholder=field.placeholder value=spotifyLink classNames="form-control"}}</span>
-									{{else}}
-										<span {{bind-attr class=field.name}}>{{input type="text" placeholder=field.placeholder classNames="form-control"}}</span>
-									{{/if}}
-								{{/if}}
-							{{/if}}
-							{{#if field.dividerEnd}}</div>{{/if}}
-						{{/each}}
-					</div>
-					
-					<div class="form-btn-block col-md-12">
-						<button class="form-control btn-primary" {{action 'submit'}}>Submit</button>
-						<button class="form-control btn-danger" {{action 'close'}}>Nevermind</button>
-					</div>
-				
-				</div>
-			
-			</div>
-  		</script>
 
   		
 
@@ -307,151 +297,8 @@
 
 
 
-		<!-- MUSIC PAGE ********************************************************************************* -->
-  		<script type="text/x-handlebars" data-template-name="music">
-  			
-  			<div {{bind-attr class="showingModal:modal-layer:hide"}}>
-  				{{#if showingForm}}
-		  			{{form-template
-	  					customClass='musicFormComponent'
-	  					fields=formFields
-	  					formData='formData'
-	  					closeForm='closeForm'
-	  					tip='If you enter a Spotify URI, the title, artist, album, and year will magically appear.'
-	  				}}
-		  		{{/if}}
-		  		{{#if showingVideo}}
-		  			<div class="video-theater">
-		  				<div class="exit-btn" {{action 'closePlayer'}}>Close</div>
-		  				<iframe src="//www.youtube.com/embed/{{unbound videoWatchLink}}" width="640" height="390" frameborder="0" allowfullscreen></iframe>
-		  			</div>
-		  		{{/if}}
-  			</div>
 
-  			
-  			<div id="music-page">
-  			<img id="bgimg" src="media/sam-cooke.png" />
-	  			
-	  			<div class="color-bar">
-	  				<div class="color-bar-single cbs-one"></div>
-	  				<div class="color-bar-single cbs-two"></div>
-	  				<div class="color-bar-single cbs-three"></div>
-	  				<div class="color-bar-single cbs-four"></div>
-	  			</div>
-	  			
-	  			{{#if showingSortButtons}}
-	  				<div class="music-control-bar">
-				  		<div class="search-container">
-			  				{{input type=text value=query class="search-box" placeholder="Search..."}}
-			  			</div>
-			  			<div class="sorting-btn-container">
-			  				<button class="btn sorting-btn add-tunes-btn" {{action 'showForm'}}>Add Tunes</button>
-			  				<button class="btn sorting-btn show-favs-btn"{{action 'toggleShowFavorites'}}>Favorites</button>
-			  				<button class="btn sorting-btn video-sort-btn" {{action 'toggleShowOnlyVideos'}}>Videos</button>
-			  				<button class="btn sorting-btn play-all-btn" {{action 'playAllSpotify'}}>Play All</button>
-			  				<div class="dropdown">
-								<a id="dLabel" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-									<button class="btn sorting-btn">Sort By<span class="caret"></span></button>
-								</a>
-								<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-									<li {{action 'sortBy' 'album'}}>Album</li>
-									<li {{action 'sortBy' 'artist'}}>Artist</li>
-									<li {{action 'sortBy' 'createdAt'}}>Date Added</li>
-									<li {{action 'sortBy' 'title'}}>Song Title</li>
-									<li {{action 'sortBy' 'submittedBy'}}>Submitted By</li>
-									<li {{action 'sortBy' 'year'}}>Year</li>
-								</ul>
-							</div>
-							<button class="btn sorting-btn scroll-up-btn" {{action 'scrollUp'}}>&#8657;</button>
-			  				<button class="btn sorting-btn toggle-sorting-options-btn" {{action 'showSortButtons'}}>&#8656;</button>
-			  			</div>
-		  			</div>
-		  		{{else}}
-		  			<button class="show-music-controls-btn toggle-sorting-options-btn" {{action 'showSortButtons'}}>&#8658;</button>
-	  			{{/if}}
-		  		
-		  		<div id="all-music" class="container">
-	  				
-	  				<div><h1 class="title-header long-listen-title">Songs</h1></div>
-
-		  			{{#with currentUser as currentUserInfo}}
-			  			{{#each filteredContent}}
-			  				{{#if dividerStart}}<div class="col-md-4">{{/if}}
-			  				{{music-entry
-			  					type=type
-			  					identity=id
-			  					submittedBy=submittedBy
-			  					createdAt=createdAt
-			  					title=title
-			  					artist=artist
-			  					album=album
-			  					year=year
-			  					comment=comment
-			  					comments=comments
-			  					tags=tags
-			  					youTubeLink=youTubeLink
-								spotifyLink=spotifyLink
-								soundCloudLink=soundCloudLink
-			  					currentUserInfo=currentUserInfo
-			  					searchTag='searchTag'
-			  					submittedByEmail=submittedByEmail
-			  					submittingComment='submittingComment'
-			  					submittingTag='submittingTag'
-			  					updatingEntry='updatingEntry'
-			  					editWhole='editWhole'
-			  					loadPlayer='loadPlayer'
-			  					favorite='favorite'
-			  					external_source=external_source
-			  					external_score=external_score
-			  				}}
-			  				{{#if dividerEnd}}</div>{{/if}}
-			  			{{/each}}
-			  		{{/with}}
-
-		  			{{#unless query}}
-		  				<button class="button-ish-two load-more-btn" {{action 'loadMoreSongs'}}>gimme more...</button>
-		  			{{/unless}}
-		  		</div>
-	  		</div>
-  		</script>
-
-
-
-
-  		<!-- EDIT MUSIC PAGE ********************************************************************************* -->
-
-		<script type="text/x-handlebars" data-template-name="tune">
-			<div class="container edit-tune-form">
-	  			<h1>Edit Your Entry</h1>
-	  			<div class="col-md-6">
-	  				<label>Type: </label>{{view Ember.Select content=musicType value=type class="form-control"}}
-	  				<label>Title: </label>{{input type="text" value=title placeholder="Title..." class="form-control"}}
-	  				<label>Artist: </label>{{input type="text" value=artist placeholder="Artist..." class="form-control"}}
-	  				<label>Album: </label>{{input type="text" value=album placeholder="Album..." class="form-control"}}
-	  				<label>Year: </label>{{input type="number" value=year placeholder="Year..." class="form-control"}}
-	  			</div>
-	  			<div class="col-md-6">
-	  				<label>Review: </label>{{textarea value=comment rows="5" placeholder="What's good..." class="form-control"}}	  
-					<label>YouTube Link: </label>{{input type=text value=youTubeLink placeholder="Youtube URI..." class="form-control"}}
-		  			<label>Spotify Link: </label>{{input type=text value=spotifyLink placeholder="Spotify URI..." class="form-control"}}	
-		  			<label>Soundcloud Link: </label>{{input type=text value=soundCloudLink placeholder="Soundcloud Embed link..." class="form-control"}}
-	  				{{#if external_source}}
-		  				<label>External Score: </label>{{input type="text" value=external_source placeholder="Pitchfork, A.V. Club, Rolling Stone..." class="form-control"}}
-		  				<label>External Score: </label>{{input type="text" value=external_score placeholder="Rating..." class="form-control"}}
-		  			{{/if}}
-	  			</div>
-	  			<div class="col-md-12">
-	  				<button {{action 'saveUpdate'}} class="btn btn-primary form-control">Save</button>
-	  				<button {{action 'cancelUpdate'}} class="btn btn-danger form-control">Nevermind</button>
-	  			</div>
-	  		</div>
-		</script>
-
-
-
-
-
-  		<!-- LISTEN PAGE ********************************************************************************* -->
+		<!-- LISTEN PAGE ********************************************************************************* -->
 
   		<script type="text/x-handlebars" data-template-name="listen">
   			<div id="listen-page">
@@ -533,7 +380,370 @@
 
 
 
+  		<!-- MOVIE PAGE ********************************************************************************* -->
+  		<script type="text/x-handlebars" data-template-name="movie">
+  		<div id="movie-page">
+			<div class="color-bar">
+  				<div class="color-bar-single cbs-one"></div>
+  				<div class="color-bar-single cbs-two"></div>
+  				<div class="color-bar-single cbs-three"></div>
+  				<div class="color-bar-single cbs-four"></div>
+	  		</div>
+	  		
+	  		<div class="music-control-bar">
+		  		<div class="search-container">
+	  				{{input type=text value=query class="search-box" placeholder="Search title, actor, director, genre..."}}
+	  				{{input type=text value=year class="search-box search-movie-year" placeholder='Year'}}
+	  			</div>
+	  			<div class="sorting-btn-container">
+	  				<button class="btn sorting-btn add-tunes-btn" {{action 'checkMovie'}}>Add Movie</button>
+	  				{{#link-to 'netflix'}}<button class="btn sorting-btn add-tunes-btn">Import Netflix Ratings</button>{{/link-to}}
+	  			</div>
+  			</div>
+  			
+  			<div class="movie-content">
+  				<h3 class="movie-results center">{{results}} results</h3>
+{{!--   				{{#each filteredContent}}
+  					<div class="col-md-2"><img class="movie-poster" src="{{unbound Poster}}"></div>
+  				{{/each}} --}}
+  				<table class="table">
+  					<tr>
+  						<th>Poster</th>
+  						<th class="pointer movie-title" {{action 'sortBy' 'Title'}}>Title</th>
+  						<th class="pointer" {{action 'sortBy' 'yearNumeric'}}>Year</th>
+  						<th class="pointer movie-director" {{action 'sortBy' 'Director'}}>Director</th>
+  						<th class="movie-plot">Plot</th>
+  						<th>Genre</th>
+  						<th class="movie-cast">Cast</th>
+  						<th class="pointer" {{action 'sortBy' 'tomatoMeterNumeric'}}>RT</th>
+  						<th>Options</th>
+  					</tr>
+  					{{#each filteredContent}}
+						<tr>
+							<td><img class="movie-poster" src="{{unbound Poster}}"></td>
+							<td>{{Title}}</td>
+							<td>{{Year}}</td>
+							<td>
+								{{#each directors}}
+									<p>{{name}}</p>
+								{{/each}}
+							</td>
+							<td>
+								<p>{{bestPlot}}</p>
+								<hr>
+								{{#each reviews}}
+									<p>
+										{{submittedBy}} {{{unbound stars}}}
+										{{#if review}}
+											<a tabindex="0" class="btn btn-sm btn-info movie-show-user-review-btn" role="button" data-toggle="popover" data-trigger="focus" title="{{unbound submittedBy}}'s Review" data-content="{{unbound review}}">Review</a>
+										{{/if}}
+									</p>
+								{{/each}}
+								<div class="movie-review-box" id="{{unbound id}}-movie-review"></div>
+							</td>
+							<td>
+								{{#each genres}}
+									<p>{{name}}</p>
+								{{/each}}
+							</td>
+							<td>
+								{{#each cast}}
+									<p>{{name}}</p>
+								{{/each}}
+							</td>
+							<td>
+								{{#if tomatoMeterDisplay}}<img class="tomato" src="{{unbound tomatoImageLink}}">{{tomatoMeterDisplay}}{{/if}}
+							</td>
+							<td>
+								<button class="btn btn-primary form-control" {{action 'addRating' id Title}}>Rate</button>
+								<button class="btn btn-success form-control" {{action 'editMovie' this}}>Edit</button>
+							</td>
+						</tr>
+  					{{/each}}
+  				</table>
+  				<button class="btn form-control" {{action 'loadMore'}}>Load More</button>
+  		</div>
+  		</script>
 
+  		<script type="text/x-handlebars" data-template-name="film">
+  			<h1 class="center" style="margin-top: 70px;">Edit Details for {{Title}}</h1>
+  			{{form-template
+				customClass='movieFormComponent'
+				fields=formFields
+				formData='formData'
+				closeForm='closeForm'
+			}}
+			<button class="btn btn-warning form-control" style="margin: 25px 0;" {{action 'deleteMovie'}}>Delete this movie</button>
+  		</script>
+
+  		<script type="text/x-handlebars" data-template-name="netflix">
+			<div class="container col-md-8 col-md-offset-2" id="netflix-page">
+				<h3 class="center">Import your Netflix ratings in 2 minutes.</h3>
+				<ol>
+					<li>Sign into Netflix</li>
+					<li>Under Taste Profile, click on "What You've Rated"</li>
+					<li>Scroll all the way to the bottom. Make sure all your ratings have loaded.</li>
+					<li>Open the Javascript console:</li>
+						<ul>
+							<li>CHROME on Mac: (option + command + j)</li>
+							<li>CHROME on Windows: (ctrl + shift + j)</li>
+							<li>FIREFOX on Mac: (option + command + k)</li>
+							<li>SAFARI on Mac: (option + command + c)</li>
+						</ul>
+					<li>A window should appear at the bottom</li>
+					<li>Click on the white space, and you should see a cursor blinking</li>
+					<li>Paste this text in and press enter:</li>
+					<textarea class="form-control">var all = $('.retable').children; var ratings = {}; for (var i = 0; i &#60; all.length - 1; i++) { var title = all[i].children[1].textContent; var rating = all[i].children[2].children[0].getAttribute('data-your-rating'); ratings[title] = rating; } copy(ratings);</textarea>
+					<li>That should copy all your Netflix ratings. Now paste them here, and click submit:</li>
+					{{textarea value=netflixData spellcheck=false class="form-control"}}
+					{{#if uploadComplete}}
+						{{#link-to 'movie'}}<button class="btn btn-success form-control">Success!</button>{{/link-to}}
+					{{else}}
+						<button class="btn btn-primary form-control" {{action 'submitRatings'}}>Submit</button>
+					{{/if}}
+				</ol>
+
+			</div>
+		</script>
+
+
+
+		<!-- MUSIC PAGE ********************************************************************************* -->
+  		<script type="text/x-handlebars" data-template-name="music">
+  			
+  			<div {{bind-attr class="showingModal:modal-layer:hide"}}>
+  				{{#if showingForm}}
+		  			{{form-template
+	  					customClass='musicFormComponent'
+	  					fields=formFields
+	  					formData='formData'
+	  					closeForm='closeForm'
+	  					tip='If you enter a Spotify URI, the title, artist, album, and year will magically appear.'
+	  				}}
+		  		{{/if}}
+		  		{{#if showingVideo}}
+		  			<div class="video-theater">
+		  				<div class="exit-btn" {{action 'closePlayer'}}>Close</div>
+		  				<iframe src="//www.youtube.com/embed/{{unbound videoWatchLink}}" width="640" height="390" frameborder="0" allowfullscreen></iframe>
+		  			</div>
+		  		{{/if}}
+  			</div>
+
+  			
+  			<div id="music-page">
+  			<img id="bgimg" src="media/sam-cooke.png" />
+	  			
+	  			{{#if showingSortButtons}}
+
+		  			<div class="color-bar">
+		  				<div class="color-bar-single cbs-one"></div>
+		  				<div class="color-bar-single cbs-two"></div>
+		  				<div class="color-bar-single cbs-three"></div>
+		  				<div class="color-bar-single cbs-four"></div>
+		  			</div>
+	  			
+	  				<div class="music-control-bar">
+				  		<div class="search-container">
+			  				{{input type=text value=query class="search-box" placeholder="Search title, artist, album, year, tags, person..."}}
+			  			</div>
+			  			<div class="sorting-btn-container">
+			  				<button class="btn sorting-btn add-tunes-btn" {{action 'showForm'}}>Add Tunes</button>
+			  				<button class="btn sorting-btn show-favs-btn"{{action 'toggleSortOptions' 'favorites'}}>Favorites</button>
+			  				<button class="btn sorting-btn video-sort-btn" {{action 'toggleSortOptions' 'showOnlyVideos'}}>Videos</button>
+			  				<button class="btn sorting-btn recent-sort-btn" {{action 'toggleSortOptions' 'showRecent'}}>Recent</button>
+			  				<button class="btn sorting-btn play-all-btn" {{action 'playAllSpotify'}}>Play All</button>
+			  				<div class="dropdown">
+								<a id="dLabel" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+									<button class="btn sorting-btn">Sort By<span class="caret"></span></button>
+								</a>
+								<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+									<li {{action 'sortBy' 'album'}}>Album</li>
+									<li {{action 'sortBy' 'artist'}}>Artist</li>
+									<li {{action 'sortBy' 'createdAt'}}>Date Added</li>
+									<li {{action 'sortBy' 'title'}}>Song Title</li>
+									<li {{action 'sortBy' 'submittedBy'}}>Submitted By</li>
+									<li {{action 'sortBy' 'year'}}>Year</li>
+								</ul>
+							</div>
+							<button class="btn sorting-btn scroll-up-btn" {{action 'scrollUp'}}>&#8657;</button>
+			  				<button class="btn sorting-btn toggle-sorting-options-btn" {{action 'showSortButtons'}}>&#8656;</button>
+			  			</div>
+		  			</div>
+		  		{{else}}
+		  			<button class="show-music-controls-btn toggle-sorting-options-btn" {{action 'showSortButtons'}}>&#8658;</button>
+	  			{{/if}}
+		  		
+		  		<div id="all-music" class="container">
+	  				
+	  				<div><h1 class="title-header long-listen-title">Songs</h1></div>
+
+		  			{{#with currentUser as currentUserInfo}}
+			  			{{#each filteredContent}}
+			  				{{#if dividerStart}}<div class="col-md-4">{{/if}}
+			  				{{music-entry
+			  					type=type
+			  					identity=id
+			  					submittedBy=submittedBy
+			  					createdAt=createdAt
+			  					title=title
+			  					artist=artist
+			  					album=album
+			  					year=year
+			  					comment=comment
+			  					comments=comments
+			  					tags=tags
+			  					youTubeLink=youTubeLink
+								spotifyLink=spotifyLink
+								soundCloudLink=soundCloudLink
+			  					currentUserInfo=currentUserInfo
+			  					newestDate=newestDate
+			  					submittedByEmail=submittedByEmail
+			  					searchTag='searchTag'
+			  					submittingComment='submittingComment'
+			  					submittingTag='submittingTag'
+			  					updatingEntry='updatingEntry'
+			  					editWhole='editWhole'
+			  					loadPlayer='loadPlayer'
+			  					favorite='favorite'
+			  				}}
+			  				{{#if dividerEnd}}</div>{{/if}}
+			  			{{/each}}
+			  		{{/with}}
+
+		  			{{#unless query}}
+		  				<button class="button-ish-two load-more-btn" {{action 'loadMoreSongs'}}>gimme more...</button>
+		  			{{/unless}}
+		  		</div>
+	  		</div>
+  		</script>
+
+
+
+
+  		<!-- MUSIC EDIT PAGE ********************************************************************************* -->
+
+		<script type="text/x-handlebars" data-template-name="tune">
+			<div class="container edit-tune-form">
+	  			<h1>Edit Your Entry</h1>
+	  			<div class="col-md-6">
+	  				<label>Type: </label>{{view Ember.Select content=musicType value=type class="form-control"}}
+	  				<label>Title: </label>{{input type="text" value=title placeholder="Title..." class="form-control"}}
+	  				<label>Artist: </label>{{input type="text" value=artist placeholder="Artist..." class="form-control"}}
+	  				<label>Album: </label>{{input type="text" value=album placeholder="Album..." class="form-control"}}
+	  				<label>Year: </label>{{input type="number" value=year placeholder="Year..." class="form-control"}}
+	  			</div>
+	  			<div class="col-md-6">
+	  				<label>Review: </label>{{textarea value=comment rows="5" placeholder="What's good..." class="form-control"}}	  
+					<label>YouTube Link: </label>{{input type=text value=youTubeLink placeholder="Youtube URI..." class="form-control"}}
+		  			<label>Spotify Link: </label>{{input type=text value=spotifyLink placeholder="Spotify URI..." class="form-control"}}	
+		  			<label>Soundcloud Link: </label>{{input type=text value=soundCloudLink placeholder="Soundcloud Embed link..." class="form-control"}}
+	  				{{#if external_source}}
+		  				<label>External Score: </label>{{input type="text" value=external_source placeholder="Pitchfork, A.V. Club, Rolling Stone..." class="form-control"}}
+		  				<label>External Score: </label>{{input type="text" value=external_score placeholder="Rating..." class="form-control"}}
+		  			{{/if}}
+	  			</div>
+	  			<div class="col-md-12">
+	  				<button {{action 'saveUpdate'}} class="btn btn-primary form-control">Save</button>
+	  				<button {{action 'cancelUpdate'}} class="btn btn-danger form-control">Nevermind</button>
+	  			</div>
+	  		</div>
+		</script>
+
+
+		
+
+
+  		<script type="text/x-handlebars" data-template-name="podcast">
+  			<div id="podcast-page">
+  			<img src="media/oldmic.jpg" id="podcast-img" />
+	  			<div {{bind-attr class="showingModal:modal-layer:hide"}}>
+	  				{{#if showingForm}}
+			  			{{form-template
+		  					customClass='podcastFormComponent'
+		  					fields=formFields
+		  					formData='formData'
+		  					closeForm='closeForm'
+		  				}}
+			  		{{/if}}
+			  	</div>
+
+			  	<div class="color-bar">
+	  				<div class="color-bar-single cbs-one"></div>
+	  				<div class="color-bar-single cbs-two"></div>
+	  				<div class="color-bar-single cbs-three"></div>
+	  				<div class="color-bar-single cbs-four"></div>
+		  		</div>
+
+		  		<div class="music-control-bar">
+			  		<div class="search-container">
+		  				{{input type=text value=query class="search-box" placeholder="Search..."}}
+		  			</div>
+		  			<div class="sorting-btn-container">
+		  				<button class="btn sorting-btn add-tunes-btn" {{action 'showForm'}}>Add Podcasts</button>
+		  			</div>
+	  			</div>
+
+	  			<div class="container content-container">
+	  				{{#each filteredContent}}
+	  					<div class="podcast-entry">
+	  						<p class="podcast-entry-title"><button class="btn-primary podcast-play-btn" {{action 'play' this}}>&#9658;</button>{{podcastName}} - {{episodeTitle}} </p>
+	  						<p class="podcast-review"><span class="upper">{{submittedBy}}</span> {{review}}</p>
+	  					</div>
+	  				{{/each}}
+		  		</div>
+  			</div>
+  		</script>
+
+
+  		
+  		<script type="text/x-handlebars" data-template-name="users">
+  			<div class="container" id="users-page">
+  				<h1>USERS</h1>
+  				<div class="search-container">
+	  				{{input type=text value=query class="search-box" placeholder="Search..."}}
+	  			</div>
+  				{{#each filteredContent}}
+  					<div class="user-list-item">
+	  					<h3 {{action 'toUser' this}}>{{firstName}} {{lastName}}</h3>
+	  					{{#if isFollowing}}
+	  						<button class="isFollowing btn-success" {{action 'follow' this}}>Following.</button>
+	  					{{else}}
+	  						<button class="isFollowing btn-primary" {{action 'follow' this}}>Follow?</button>
+	  					{{/if}}
+	  				</div>
+  				{{/each}}
+  			</div>
+  		</script>
+
+  		
+
+  		<script type="text/x-handlebars" data-template-name="user">
+  			<div class="container" id="user-page">
+  				<div class="col-md-12"><h2 class="user-title">{{firstName}} {{lastName}}</h2></div>
+  				<div class="col-md-12">
+  					<h3>{{mySongs.length}} Songs</h3>
+  					{{#each mySongs}}
+  						<button class="btn btn-info" {{action 'loadSong' this}}>{{title}} - {{artist}}</button>
+  					{{/each}}
+  				</div>
+  				<div class="col-md-12">
+  					<h3>{{myListens.length}} Listens</h3>
+  					{{#each myListens}}
+  						<button class="btn btn-warning" {{action 'loadListen' this}}>{{name}} - {{artist}}</button>
+  					{{/each}}
+  				</div>
+  				<div class="col-md-12">
+  					<h3>{{myPodcasts.length}} Podcasts</h3>
+  					{{#each myPodcasts}}
+  						<button class="btn btn-danger" {{action 'loadPodcast' this}}>{{episodeTitle}} - {{podcastName}}</button>
+  					{{/each}}
+  				</div>
+  			</div>
+  		</script>
+
+
+
+  		
   		<!-- UPDATES PAGE ********************************************************************************* -->
 
   		<script type="text/x-handlebars" data-template-name="update">
@@ -542,6 +752,20 @@
 
   				<h4>If you have thoughts on any of this, you know how to get in touch. And if something doesn't work, por favor let me know.</h4>
   				<h4>Also, there're a bunch of features on the site. Try using the search bar, or the sort buttons.</h4>
+
+  				<hr>
+
+  				<h4>Editing Your Comments</h4>
+  				<ol>
+  					<li>Double click on your comment to edit.</li>
+  				</ol>
+
+  				<hr>
+
+  				<h4>The "Recent" Button</h4>
+  				<ol>
+  					<li>Clicking this will sort the entry by the latest activity - comment or submitted by date.</li>
+  				</ol>
 
   				<hr>
 
@@ -665,93 +889,6 @@
   					</ol>
   				</ol>
 
-  			</div>
-  		</script>
-
-
-
-  		<script type="text/x-handlebars" data-template-name="podcast">
-  			<div id="podcast-page">
-  			<img src="media/oldmic.jpg" id="podcast-img" />
-	  			<div {{bind-attr class="showingModal:modal-layer:hide"}}>
-	  				{{#if showingForm}}
-			  			{{form-template
-		  					customClass='podcastFormComponent'
-		  					fields=formFields
-		  					formData='formData'
-		  					closeForm='closeForm'
-		  				}}
-			  		{{/if}}
-			  	</div>
-
-			  	<div class="color-bar">
-	  				<div class="color-bar-single cbs-one"></div>
-	  				<div class="color-bar-single cbs-two"></div>
-	  				<div class="color-bar-single cbs-three"></div>
-	  				<div class="color-bar-single cbs-four"></div>
-		  		</div>
-
-		  		<div class="music-control-bar">
-			  		<div class="search-container">
-		  				{{input type=text value=query class="search-box" placeholder="Search..."}}
-		  			</div>
-		  			<div class="sorting-btn-container">
-		  				<button class="btn sorting-btn add-tunes-btn" {{action 'showForm'}}>Add Podcasts</button>
-		  			</div>
-	  			</div>
-
-	  			<div class="container content-container">
-	  				{{#each filteredContent}}
-	  					<div class="podcast-entry">
-	  						<p class="podcast-entry-title"><button class="btn-primary podcast-play-btn" {{action 'play' this}}>&#9658;</button>{{podcastName}} - {{episodeTitle}} </p>
-	  						<p class="podcast-review"><span class="upper">{{submittedBy}}</span> {{review}}</p>
-	  					</div>
-	  				{{/each}}
-		  		</div>
-  			</div>
-  		</script>
-
-
-  		<script type="text/x-handlebars" data-template-name="users">
-  			<div class="container" id="users-page">
-  				<h1>USERS</h1>
-  				<div class="search-container">
-	  				{{input type=text value=query class="search-box" placeholder="Search..."}}
-	  			</div>
-  				{{#each filteredContent}}
-  					<div class="user-list-item">
-	  					<h3 {{action 'toUser' this}}>{{firstName}} {{lastName}}</h3>
-	  					{{#if isFollowing}}
-	  						<button class="isFollowing btn-success" {{action 'follow' this}}>Following.</button>
-	  					{{else}}
-	  						<button class="isFollowing btn-primary" {{action 'follow' this}}>Follow?</button>
-	  					{{/if}}
-	  				</div>
-  				{{/each}}
-  			</div>
-  		</script>
-
-  		<script type="text/x-handlebars" data-template-name="user">
-  			<div class="container" id="user-page">
-  				<div class="col-md-12"><h2 class="user-title">{{firstName}} {{lastName}}</h2></div>
-  				<div class="col-md-12">
-  					<h3>{{mySongs.length}} Songs</h3>
-  					{{#each mySongs}}
-  						<button class="btn btn-info" {{action 'loadSong' this}}>{{title}} - {{artist}}</button>
-  					{{/each}}
-  				</div>
-  				<div class="col-md-12">
-  					<h3>{{myListens.length}} Listens</h3>
-  					{{#each myListens}}
-  						<button class="btn btn-warning" {{action 'loadListen' this}}>{{name}} - {{artist}}</button>
-  					{{/each}}
-  				</div>
-  				<div class="col-md-12">
-  					<h3>{{myPodcasts.length}} Podcasts</h3>
-  					{{#each myPodcasts}}
-  						<button class="btn btn-danger" {{action 'loadPodcast' this}}>{{episodeTitle}} - {{podcastName}}</button>
-  					{{/each}}
-  				</div>
   			</div>
   		</script>
 
